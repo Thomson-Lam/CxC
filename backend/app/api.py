@@ -138,7 +138,8 @@ def create_app() -> FastAPI:
                     error_text=str(exc),
                 )
                 increment_metric(conn, "errors.ingest_csv", 1.0)
-            raise
+            logger.exception("ingest_csv failed")
+            raise HTTPException(status_code=500, detail=str(exc))
 
 
     @app.post("/ingest/polymarket", response_model=GenericResponse)
@@ -215,7 +216,8 @@ def create_app() -> FastAPI:
                     error_text=str(exc),
                 )
                 increment_metric(conn, "errors.ingest_polymarket", 1.0)
-            raise
+            logger.exception("ingest_polymarket failed")
+            raise HTTPException(status_code=500, detail=str(exc))
 
     @app.post("/pipeline/recompute", response_model=GenericResponse)
     def recompute(req: RecomputeRequest, conn: sqlite3.Connection = Depends(get_conn)) -> GenericResponse:
@@ -253,7 +255,8 @@ def create_app() -> FastAPI:
                     error_text=str(exc),
                 )
                 increment_metric(conn, "errors.recompute", 1.0)
-            raise
+            logger.exception("recompute failed")
+            raise HTTPException(status_code=500, detail=str(exc))
 
     @app.get("/screener", response_model=GenericResponse)
     def screener(
@@ -562,7 +565,8 @@ def create_app() -> FastAPI:
                     error_text=str(exc),
                 )
                 increment_metric(conn, "errors.backtest", 1.0)
-            raise
+            logger.exception("backtest failed")
+            raise HTTPException(status_code=500, detail=str(exc))
 
     @app.get("/backtest/{run_id}", response_model=GenericResponse)
     def get_backtest(run_id: str, conn: sqlite3.Connection = Depends(get_conn)) -> GenericResponse:

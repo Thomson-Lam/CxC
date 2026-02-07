@@ -114,10 +114,16 @@ def _load_jsonish_list(value: Any) -> list[Any]:
 def _http_get_json(url: str, params: dict[str, Any] | None = None, timeout: int = 30) -> Any:
     query = urlencode({k: v for k, v in (params or {}).items() if v is not None})
     full_url = f"{url}?{query}" if query else url
-    req = Request(full_url, headers={"User-Agent": "precognition-backend/0.1"})
-    with urlopen(req, timeout=timeout) as resp:
-        payload = resp.read().decode("utf-8")
-    return json.loads(payload)
+    req = Request(full_url, headers={"User-Agent": "smartcrowd-backend/0.1"})
+    LOGGER.debug("HTTP GET %s", full_url)
+    try:
+        with urlopen(req, timeout=timeout) as resp:
+            payload = resp.read().decode("utf-8")
+        return json.loads(payload)
+    except Exception as exc:
+        LOGGER.error("HTTP GET failed url=%s error=%s", full_url, exc)
+        raise
+>>>>>>> c3ddfe9 (fix: graceful error handling instead of catching at CORS level)
 
 
 def _load_checkpoint(conn: sqlite3.Connection, source: str, checkpoint_key: str) -> dict[str, Any] | None:
@@ -178,6 +184,8 @@ def _delete_checkpoint(conn: sqlite3.Connection, source: str, checkpoint_key: st
 
 
 def _fetch_markets(closed: bool, total_limit: int, page_size: int = 200) -> list[dict]:
+    label = "closed" if closed else "active"
+    LOGGER.info("fetch_markets: fetching %s markets (limit=%d)", label, total_limit)
     if total_limit <= 0:
         return []
     results: list[dict] = []
@@ -189,8 +197,10 @@ def _fetch_markets(closed: bool, total_limit: int, page_size: int = 200) -> list
             {"closed": str(closed).lower(), "limit": limit, "offset": offset},
         )
         if not isinstance(rows, list) or not rows:
+            LOGGER.info("fetch_markets: %s — no more rows at offset=%d", label, offset)
             break
         results.extend(rows)
+        LOGGER.info("fetch_markets: %s — fetched %d (total so far: %d)", label, len(rows), len(results))
         if len(rows) < limit:
             break
         offset += len(rows)
@@ -373,6 +383,14 @@ def ingest_polymarket(
     checkpoint_lookback_seconds: int = 300,
     reset_checkpoint: bool = False,
 ) -> dict[str, Any]:
+    LOGGER.info(
+        "ingest_polymarket: START active=%s(%d) closed=%s(%d) trades_per_market=%d "
+        "chunk_size=%d page_size=%d taker_only=%s checkpoint=%s",
+        include_active_markets, active_markets_limit,
+        include_closed_markets, closed_markets_limit,
+        trades_per_market, market_chunk_size, trade_page_size,
+        taker_only, use_incremental_checkpoint,
+    )
     if reset_checkpoint:
         _delete_checkpoint(conn, CHECKPOINT_SOURCE, TRADES_CHECKPOINT_KEY)
 
@@ -463,19 +481,30 @@ def ingest_polymarket(
     )
 
     condition_ids = list(market_by_condition.keys())
+    total_chunks = (len(condition_ids) + market_chunk_size - 1) // market_chunk_size if condition_ids else 0
+    LOGGER.info(
+        "trade_fetch: starting — %d condition_ids, chunk_size=%d, total_chunks=%d, trades_per_market=%d",
+        len(condition_ids), market_chunk_size, total_chunks, trades_per_market,
+    )
     trade_rows: list[tuple] = []
     skipped = 0
     trades_fetched = 0
     max_trade_timestamp_seen: int | None = None
     skipped_by_reason: dict[str, int] = {"unmapped": 0}
+    chunk_index = 0
     for start in range(0, len(condition_ids), market_chunk_size):
         chunk = condition_ids[start : start + market_chunk_size]
         if not chunk:
             continue
+        chunk_index += 1
         chunk_budget = trades_per_market * len(chunk)
         chunk_fetched = 0
         offset = 0
         market_param = ",".join(chunk)
+        LOGGER.info(
+            "trade_fetch: chunk [%d/%d] ids=%d market_param_len=%d budget=%d",
+            chunk_index, total_chunks, len(chunk), len(market_param), chunk_budget,
+        )
         while chunk_fetched < chunk_budget:
             page_limit = min(trade_page_size, chunk_budget - chunk_fetched)
             params: dict[str, Any] = {
@@ -490,6 +519,7 @@ def ingest_polymarket(
                 params["timestamp_end"] = max_trade_timestamp
             page = _http_get_json(f"{DATA_BASE_URL}/trades", params=params)
             if not isinstance(page, list) or not page:
+                LOGGER.info("trade_fetch: chunk [%d/%d] — empty page at offset=%d, moving on", chunk_index, total_chunks, offset)
                 break
             for tr in page:
                 normalized = _normalize_trade_row(tr, market_by_condition)
@@ -504,9 +534,15 @@ def ingest_polymarket(
             fetched = len(page)
             trades_fetched += fetched
             chunk_fetched += fetched
+            LOGGER.debug("trade_fetch: chunk [%d/%d] page fetched=%d chunk_total=%d/%d", chunk_index, total_chunks, fetched, chunk_fetched, chunk_budget)
             if fetched < page_limit:
                 break
             offset += fetched
+
+    LOGGER.info(
+        "trade_fetch: DONE — trades_fetched=%d trade_rows=%d skipped=%d",
+        trades_fetched, len(trade_rows), skipped,
+    )
 
     before = conn.total_changes
     conn.executemany(
