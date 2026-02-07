@@ -10,7 +10,7 @@ export function Card({ hover, className, children, ...props }: CardProps) {
     <div
       className={clsx(
         "border-2 border-foreground bg-background p-4",
-        hover && "transition-colors hover:bg-foreground hover:text-background hover:border-background",
+        hover && "group transition-colors hover:bg-foreground hover:text-background hover:border-background",
         className
       )}
       {...props}

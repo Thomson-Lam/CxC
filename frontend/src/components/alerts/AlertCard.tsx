@@ -42,11 +42,11 @@ export function AlertCard({ alert }: AlertCardProps) {
 				<div className="flex items-start justify-between gap-4">
 					<div className="flex-1">
 						<div className="flex flex-wrap items-center gap-2">
-							<Badge variant={getAlertVariant(alert.type)} className="transition-colors hover:bg-foreground hover:border-background hover:text-background">
+							<Badge variant={getAlertVariant(alert.type)} className="transition-colors group-hover:bg-foreground group-hover:border-background group-hover:text-background">
 								{getAlertTypeLabel(alert.type)}
 							</Badge>
 							{alert.category && (
-								<Badge variant="muted" className="transition-colors hover:bg-foreground hover:border-background hover:text-background">{alert.category}</Badge>
+								<Badge variant="muted" className="transition-colors group-hover:bg-foreground group-hover:border-background group-hover:text-background">{alert.category}</Badge>
 							)}
 							<span className="text-sm text-muted">
 								{formatDistanceToNow(new Date(alert.snapshot_time), {
