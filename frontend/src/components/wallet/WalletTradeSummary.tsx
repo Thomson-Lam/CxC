@@ -19,9 +19,11 @@ interface WalletTradeSummaryProps {
 export function WalletTradeSummary({ summary }: WalletTradeSummaryProps) {
 	return (
 		<>
-			<Card>
-				<CardTitle>Trade Activity</CardTitle>
-				<CardContent className="mt-4">
+			<Card className="p-0">
+				<div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-3">
+					<CardTitle>Trade Activity</CardTitle>
+				</div>
+				<CardContent className="p-4">
 					<p className="mb-4 text-sm">
 						Raw trade activity
 					</p>
@@ -55,9 +57,11 @@ export function WalletTradeSummary({ summary }: WalletTradeSummaryProps) {
 			</Card>
 
 			{summary.recent_trades.length > 0 && (
-				<Card>
-					<CardTitle>Recent Trades</CardTitle>
-					<CardContent className="mt-4">
+				<Card className="p-0">
+					<div className="bg-foreground text-background border-b-2 border-background px-4 py-3">
+						<CardTitle>Recent Trades</CardTitle>
+					</div>
+					<CardContent className="p-4">
 						<Table>
 							<TableHeader>
 								<TableRow>
