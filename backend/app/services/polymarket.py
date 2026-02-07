@@ -15,7 +15,7 @@ GAMMA_BASE_URL = "https://gamma-api.polymarket.com"
 DATA_BASE_URL = "https://data-api.polymarket.com"
 CHECKPOINT_SOURCE = "polymarket"
 TRADES_CHECKPOINT_KEY = "trades_global"
-LOGGER = logging.getLogger("smartcrowd.polymarket")
+LOGGER = logging.getLogger("precognition.polymarket")
 
 ACTION_MAP = {
     "BUY": "BUY",
@@ -114,7 +114,7 @@ def _load_jsonish_list(value: Any) -> list[Any]:
 def _http_get_json(url: str, params: dict[str, Any] | None = None, timeout: int = 30) -> Any:
     query = urlencode({k: v for k, v in (params or {}).items() if v is not None})
     full_url = f"{url}?{query}" if query else url
-    req = Request(full_url, headers={"User-Agent": "smartcrowd-backend/0.1"})
+    req = Request(full_url, headers={"User-Agent": "precognition-backend/0.1"})
     with urlopen(req, timeout=timeout) as resp:
         payload = resp.read().decode("utf-8")
     return json.loads(payload)

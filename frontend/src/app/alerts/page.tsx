@@ -35,7 +35,7 @@ export default function AlertsPage() {
         <div>
           <h1 className="text-3xl font-bold">Alerts</h1>
           <p className="mt-1 text-muted">
-            Real-time signals from SmartCrowd analysis
+            Real-time signals from Precognition analysis
           </p>
         </div>
         <div className="text-sm text-muted">

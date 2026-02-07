@@ -39,9 +39,9 @@ export function BacktestSummary({ summary }: BacktestSummaryProps) {
 						</div>
 
 						<div>
-							<div className="text-sm text-muted">SmartCrowd Brier</div>
+							<div className="text-sm text-muted">Precognition Brier</div>
 							<div className="mt-1 text-2xl font-bold">
-								{summary.smartcrowd_brier?.toFixed(4)}
+								{summary.precognition_brier?.toFixed(4)}
 							</div>
 						</div>
 

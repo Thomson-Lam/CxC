@@ -21,7 +21,7 @@ export function ProbabilityChart({ timeSeries }: ProbabilityChartProps) {
   const chartData = timeSeries.map((point) => ({
     time: format(new Date(point.snapshot_time), "MMM d HH:mm"),
     market: point.market_prob * 100,
-    smartcrowd: point.smartcrowd_prob * 100,
+    Precognition: point.precognition_prob * 100,
     divergence: point.divergence * 100,
   }));
 
@@ -67,8 +67,8 @@ export function ProbabilityChart({ timeSeries }: ProbabilityChartProps) {
               />
               <Line
                 type="monotone"
-                dataKey="smartcrowd"
-                name="SmartCrowd"
+                dataKey="Precognition"
+                name="Precognition"
                 stroke="#ededed"
                 strokeWidth={2}
                 dot={false}

@@ -4,7 +4,7 @@ Uses **Google Gemini** directly to generate natural language explanations for ma
 
 ## Overview
 
-When a market has >3% divergence between Polymarket odds and SmartCrowd predictions, users can click "🤖 Explain Divergence" to get an AI explanation of why informed traders might see something the market doesn't.
+When a market has >3% divergence between Polymarket odds and Precognition predictions, users can click "🤖 Explain Divergence" to get an AI explanation of why informed traders might see something the market doesn't.
 
 ## API Endpoint
 
@@ -17,7 +17,7 @@ POST /markets/{market_id}/explain
 {
   "result": {
     "market_id": "abc123",
-    "explanation": "The SmartCrowd is 5% more bullish because...",
+    "explanation": "The Precognition is 5% more bullish because...",
     "cached": false
   }
 }

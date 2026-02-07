@@ -1,2 +1,2 @@
-"""SmartCrowd backend package."""
+"""Precognition backend package."""
 

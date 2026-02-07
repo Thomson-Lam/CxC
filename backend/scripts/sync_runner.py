@@ -24,7 +24,7 @@ from app.services.observability import (  # noqa: E402
 )
 from app.services.sync import SyncCycleConfig, run_sync_cycle  # noqa: E402
 
-LOGGER = logging.getLogger("smartcrowd.sync_runner")
+LOGGER = logging.getLogger("precognition.sync_runner")
 
 
 def _configure_logging(level: str) -> None:

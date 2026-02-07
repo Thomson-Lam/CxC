@@ -19,7 +19,7 @@ export default function BacktestPage() {
       <div>
         <h1 className="text-3xl font-bold">Backtest</h1>
         <p className="mt-1 text-muted">
-          Evaluate SmartCrowd signal performance against resolved markets
+          Evaluate Precognition signal performance against resolved markets
         </p>
       </div>
 
@@ -83,7 +83,7 @@ export default function BacktestPage() {
         <Card className="border-dashed">
           <CardContent className="py-12 text-center">
             <p className="text-muted">
-              Run a backtest to evaluate SmartCrowd signal performance
+              Run a backtest to evaluate Precognition signal performance
             </p>
           </CardContent>
         </Card>

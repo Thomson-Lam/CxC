@@ -16,7 +16,7 @@ import requests
 
 from app.config import BACKBOARD_API_KEY
 
-logger = logging.getLogger("smartcrowd.backboard")
+logger = logging.getLogger("precognition.backboard")
 
 # Try to get Gemini API key (fallback to BACKBOARD for backwards compat)
 import os
@@ -32,10 +32,10 @@ _MIN_INTERVAL_SECONDS = 60  # Minimum 60 seconds between calls for same market
 _explanation_cache: dict[str, tuple[str, float]] = {}
 _CACHE_TTL_SECONDS = 300  # Cache explanations for 5 minutes
 
-SYSTEM_PROMPT = """You are a prediction market analyst for SmartCrowd, a platform that tracks high-accuracy traders ("whales") on Polymarket.
+SYSTEM_PROMPT = """You are a prediction market analyst for Precognition, a platform that tracks high-accuracy traders ("whales") on Polymarket.
 
-When given market data showing divergence between market odds and SmartCrowd predictions, you analyze:
-1. What the divergence means (SmartCrowd is more bullish/bearish than the market)
+When given market data showing divergence between market odds and Precognition predictions, you analyze:
+1. What the divergence means (Precognition is more bullish/bearish than the market)
 2. Which cohorts are driving the signal (whale wallets, high Brier score traders, etc.)
 3. Why informed traders might see something the market doesn't
 
@@ -118,8 +118,8 @@ Category: {context.get('category', 'Unknown')}
 
 Current Prices:
 - Market probability: {context.get('market_prob', 0):.1%}
-- SmartCrowd probability: {context.get('smartcrowd_prob', 0):.1%}
-- Divergence: {abs(divergence):.1%} (SmartCrowd is {direction})
+- Precognition probability: {context.get('precognition_prob', 0):.1%}
+- Divergence: {abs(divergence):.1%} (Precognition is {direction})
 
 Signal Quality:
 - Confidence: {context.get('confidence', 0):.2f}
@@ -129,7 +129,7 @@ Signal Quality:
 {driver_summary}
 {cohort_text}
 
-Explain in 2-3 sentences why SmartCrowd disagrees with the market and what informed traders might see."""
+Explain in 2-3 sentences why Precognition disagrees with the market and what informed traders might see."""
 
     return message.strip()
 

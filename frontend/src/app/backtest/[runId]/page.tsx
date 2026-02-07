@@ -46,7 +46,7 @@ export default function BacktestDetailPage({
 
       <BacktestSummary summary={data} />
 
-      <EdgeBuckets buckets={data.edge_buckets} />
+      <EdgeBuckets buckets={data.edge_buckets ?? []} />
     </div>
   );
 }

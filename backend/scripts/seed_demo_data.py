@@ -175,7 +175,7 @@ def generate_dataset(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate demo SmartCrowd dataset.")
+    parser = argparse.ArgumentParser(description="Generate demo Precognition dataset.")
     parser.add_argument("--out-dir", default=str(BACKEND_DIR / "data" / "demo"), help="Output directory")
     parser.add_argument("--markets", type=int, default=80)
     parser.add_argument("--wallets", type=int, default=45)

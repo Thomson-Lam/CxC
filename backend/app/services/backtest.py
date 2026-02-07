@@ -8,7 +8,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 
 from app.db import now_utc_iso
-from app.services.smartcrowd import build_market_snapshot
+from app.services.precognition import build_market_snapshot
 
 
 def clamp(value: float, lower: float, upper: float) -> float:
@@ -76,7 +76,7 @@ def _edge_bucket_stats(records: list[dict]) -> list[dict]:
             continue
         better = 0
         for r in subset:
-            smart_err = abs(r["smartcrowd_prob"] - r["outcome"])
+            smart_err = abs(r["precognition_prob"] - r["outcome"])
             market_err = abs(r["market_prob"] - r["outcome"])
             if smart_err < market_err:
                 better += 1
@@ -132,7 +132,7 @@ def run_backtest(conn: sqlite3.Connection, cutoff_hours: float = 12.0, run_id: s
             "market_id": market_id,
             "cutoff_time": cutoff_dt.isoformat(),
             "market_prob": float(snap["market_prob"]),
-            "smartcrowd_prob": float(snap["smartcrowd_prob"]),
+            "precognition_prob": float(snap["precognition_prob"]),
             "outcome": outcome,
             "confidence": float(snap["confidence"]),
             "divergence": float(snap["divergence"]),
@@ -141,7 +141,7 @@ def run_backtest(conn: sqlite3.Connection, cutoff_hours: float = 12.0, run_id: s
         conn.execute(
             """
             INSERT INTO market_backtests (
-              run_id, market_id, cutoff_time, market_prob, smartcrowd_prob, outcome, confidence, divergence
+              run_id, market_id, cutoff_time, market_prob, precognition_prob, outcome, confidence, divergence
             )
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
@@ -150,7 +150,7 @@ def run_backtest(conn: sqlite3.Connection, cutoff_hours: float = 12.0, run_id: s
                 record["market_id"],
                 record["cutoff_time"],
                 record["market_prob"],
-                record["smartcrowd_prob"],
+                record["precognition_prob"],
                 record["outcome"],
                 record["confidence"],
                 record["divergence"],
@@ -166,7 +166,7 @@ def run_backtest(conn: sqlite3.Connection, cutoff_hours: float = 12.0, run_id: s
         }
     else:
         market_probs = [r["market_prob"] for r in records]
-        smart_probs = [r["smartcrowd_prob"] for r in records]
+        smart_probs = [r["precognition_prob"] for r in records]
         outcomes = [r["outcome"] for r in records]
 
         brier_market = sum((p - y) ** 2 for p, y in zip(market_probs, outcomes)) / len(records)
@@ -177,10 +177,10 @@ def run_backtest(conn: sqlite3.Connection, cutoff_hours: float = 12.0, run_id: s
 
         top_cases = sorted(records, key=lambda r: abs(r["divergence"]), reverse=True)[:8]
         for case in top_cases:
-            case["smart_abs_error"] = abs(case["smartcrowd_prob"] - case["outcome"])
+            case["smart_abs_error"] = abs(case["precognition_prob"] - case["outcome"])
             case["market_abs_error"] = abs(case["market_prob"] - case["outcome"])
             case["winner"] = (
-                "smartcrowd"
+                "Precognition"
                 if case["smart_abs_error"] < case["market_abs_error"]
                 else ("market" if case["smart_abs_error"] > case["market_abs_error"] else "tie")
             )
@@ -189,15 +189,15 @@ def run_backtest(conn: sqlite3.Connection, cutoff_hours: float = 12.0, run_id: s
             "run_id": run_id,
             "generated_at": now_utc_iso(),
             "markets_evaluated": len(records),
-            "brier": {"market": brier_market, "smartcrowd": brier_smart},
-            "log_loss": {"market": ll_market, "smartcrowd": ll_smart},
+            "brier": {"market": brier_market, "Precognition": brier_smart},
+            "log_loss": {"market": ll_market, "Precognition": ll_smart},
             "delta": {
                 "brier_improvement": brier_market - brier_smart,
                 "log_loss_improvement": ll_market - ll_smart,
             },
             "calibration": {
                 "market": _calibration_bins(market_probs, outcomes),
-                "smartcrowd": _calibration_bins(smart_probs, outcomes),
+                "Precognition": _calibration_bins(smart_probs, outcomes),
             },
             "edge_buckets": edge_buckets,
             "top_divergence_cases": top_cases,
