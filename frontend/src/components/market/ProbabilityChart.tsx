@@ -73,7 +73,7 @@ export function ProbabilityChart({ timeSeries }: ProbabilityChartProps) {
 
 	return (
 		<Card header>
-			<div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-3">
+			<div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-4">
 				<CardTitle>Probability Over Time</CardTitle>
 			</div>
 			<CardContent className="p-4">

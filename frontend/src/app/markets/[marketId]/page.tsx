@@ -90,7 +90,7 @@ export default function MarketDetailPage({
 			<TopDriversTable drivers={latest_snapshot.top_drivers} />
 
 			<Card header>
-				<div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-3">
+				<div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-4">
 					<CardTitle>Flow Summary</CardTitle>
 				</div>
 				<CardContent className="p-4">
