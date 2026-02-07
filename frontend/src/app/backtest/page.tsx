@@ -7,7 +7,7 @@ import { EdgeBuckets } from "@/components/backtest/EdgeBuckets";
 import { useRunBacktest } from "@/lib/hooks";
 
 export default function BacktestPage() {
-  const [cutoffHours, setCutoffHours] = useState(12);
+  const [cutoffHours, setCutoffHours] = useState(1);
   const runBacktest = useRunBacktest();
 
   const isValidCutoff = cutoffHours > 0 && cutoffHours <= 168 && !Number.isNaN(cutoffHours);
