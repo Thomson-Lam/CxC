@@ -9,7 +9,7 @@ import { RunPipelineModal } from "@/components/pipeline/RunPipelineModal";
 import { useAlerts } from "@/lib/hooks";
 
 const navItems = [
-  { href: "/", label: "Dashboard" },
+  { href: "/dashboard", label: "Dashboard" },
   { href: "/screener", label: "Screener" },
   { href: "/backtest", label: "Backtest" },
   { href: "/alerts", label: "Alerts" },
@@ -21,6 +21,11 @@ export function Header() {
   const { data: alertsData } = useAlerts();
 
   const alertCount = alertsData?.count ?? 0;
+  const isLanding = pathname === "/";
+
+  if (isLanding) {
+    return null;
+  }
 
   return (
     <>
