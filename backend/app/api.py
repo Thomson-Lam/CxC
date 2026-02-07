@@ -22,7 +22,7 @@ from app.schemas import (
     PolymarketIngestRequest,
     RecomputeRequest,
 )
-from app.services.backtest import normalize_backtest_summary, run_backtest
+from app.services.backtest import run_backtest
 from app.services.beliefs import yes_direction
 from app.services.ingest import ingest_markets, ingest_outcomes, ingest_trades
 from app.services.observability import (
@@ -584,7 +584,7 @@ def create_app() -> FastAPI:
         ).fetchone()
         if not row:
             raise HTTPException(status_code=404, detail=f"Backtest run not found: {run_id}")
-        return GenericResponse(result=normalize_backtest_summary(json.loads(row["summary_json"])))
+        return GenericResponse(result=json.loads(row["summary_json"]))
 
     @app.get("/alerts", response_model=GenericResponse)
     def alerts(
