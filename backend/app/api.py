@@ -532,6 +532,7 @@ def create_app() -> FastAPI:
 
     @app.post("/backtest", response_model=GenericResponse)
     def backtest(req: BacktestRequest, conn: sqlite3.Connection = Depends(get_conn)) -> GenericResponse:
+        logger.info("POST /backtest request: cutoff_hours=%.2f run_id=%s", req.cutoff_hours, req.run_id)
         with conn:
             run_track_id = start_pipeline_run(
                 conn,
@@ -543,6 +544,10 @@ def create_app() -> FastAPI:
             with conn:
                 summary = run_backtest(conn, cutoff_hours=req.cutoff_hours, run_id=req.run_id)
             duration_ms = (time.perf_counter() - started) * 1000.0
+            logger.info(
+                "POST /backtest response: total_markets=%s cutoff_hours=%s duration_ms=%.1f",
+                summary.get("total_markets"), summary.get("cutoff_hours"), duration_ms,
+            )
             with conn:
                 finish_pipeline_run(
                     conn,
@@ -550,7 +555,7 @@ def create_app() -> FastAPI:
                     "success",
                     metrics={
                         "run_id": summary.get("run_id"),
-                        "markets_evaluated": summary.get("markets_evaluated"),
+                        "total_markets": summary.get("total_markets"),
                         "duration_ms": duration_ms,
                     },
                 )

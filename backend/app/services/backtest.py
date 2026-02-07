@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import math
 import sqlite3
 import uuid
@@ -8,6 +9,8 @@ from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 
 from app.db import now_utc_iso
+
+LOGGER = logging.getLogger("smartcrowd.backtest")
 from app.services.precognition import build_market_snapshot
 
 
@@ -72,19 +75,25 @@ def _edge_bucket_stats(records: list[dict]) -> list[dict]:
     for low, high, name in buckets:
         subset = [r for r in records if low <= abs(r["divergence"]) < high]
         if not subset:
-            output.append({"bucket": name, "count": 0, "smart_better_rate": None})
+            output.append({"bucket": name, "count": 0, "avg_edge": 0, "avg_pnl": 0, "win_rate": 0})
             continue
         better = 0
+        total_edge = 0.0
+        total_pnl = 0.0
         for r in subset:
             smart_err = abs(r["precognition_prob"] - r["outcome"])
             market_err = abs(r["market_prob"] - r["outcome"])
+            total_edge += market_err - smart_err
+            total_pnl += market_err - smart_err
             if smart_err < market_err:
                 better += 1
         output.append(
             {
                 "bucket": name,
                 "count": len(subset),
-                "smart_better_rate": better / len(subset),
+                "avg_edge": total_edge / len(subset),
+                "avg_pnl": total_pnl / len(subset),
+                "win_rate": better / len(subset),
             }
         )
     return output
@@ -164,11 +173,17 @@ def run_backtest(conn: sqlite3.Connection, cutoff_hours: float = 1.0, run_id: st
             ),
         )
 
+    LOGGER.info(
+        "backtest: cutoff_hours=%.2f, resolved_markets=%d, eligible_after_filters=%d",
+        cutoff_hours, len(markets), len(records),
+    )
+
     if not records:
         summary = {
             "run_id": run_id,
-            "generated_at": now_utc_iso(),
-            "markets_evaluated": 0,
+            "cutoff_hours": cutoff_hours,
+            "evaluated_at": now_utc_iso(),
+            "total_markets": 0,
             "note": "No eligible resolved markets with data before cutoff.",
         }
     else:
@@ -194,14 +209,13 @@ def run_backtest(conn: sqlite3.Connection, cutoff_hours: float = 1.0, run_id: st
 
         summary = {
             "run_id": run_id,
-            "generated_at": now_utc_iso(),
-            "markets_evaluated": len(records),
-            "brier": {"market": brier_market, "Precognition": brier_smart},
+            "cutoff_hours": cutoff_hours,
+            "evaluated_at": now_utc_iso(),
+            "total_markets": len(records),
+            "precognition_brier": brier_smart,
+            "market_brier": brier_market,
+            "brier_improvement": brier_market - brier_smart,
             "log_loss": {"market": ll_market, "Precognition": ll_smart},
-            "delta": {
-                "brier_improvement": brier_market - brier_smart,
-                "log_loss_improvement": ll_market - ll_smart,
-            },
             "calibration": {
                 "market": _calibration_bins(market_probs, outcomes),
                 "Precognition": _calibration_bins(smart_probs, outcomes),
@@ -209,6 +223,8 @@ def run_backtest(conn: sqlite3.Connection, cutoff_hours: float = 1.0, run_id: st
             "edge_buckets": edge_buckets,
             "top_divergence_cases": top_cases,
         }
+
+    LOGGER.info("backtest_summary: %s", json.dumps(summary, default=str))
 
     conn.execute(
         """

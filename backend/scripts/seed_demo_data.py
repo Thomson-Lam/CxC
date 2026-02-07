@@ -217,9 +217,10 @@ def main() -> None:
             "Backtest:",
             {
                 "run_id": b.get("run_id"),
-                "markets_evaluated": b.get("markets_evaluated"),
-                "brier": b.get("brier"),
-                "log_loss": b.get("log_loss"),
+                "total_markets": b.get("total_markets"),
+                "market_brier": b.get("market_brier"),
+                "precognition_brier": b.get("precognition_brier"),
+                "brier_improvement": b.get("brier_improvement"),
             },
         )
 

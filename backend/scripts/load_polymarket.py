@@ -63,9 +63,10 @@ def main() -> None:
                     "Backtest:",
                     {
                         "run_id": backtest.get("run_id"),
-                        "markets_evaluated": backtest.get("markets_evaluated"),
-                        "brier": backtest.get("brier"),
-                        "log_loss": backtest.get("log_loss"),
+                        "total_markets": backtest.get("total_markets"),
+                        "market_brier": backtest.get("market_brier"),
+                        "precognition_brier": backtest.get("precognition_brier"),
+                        "brier_improvement": backtest.get("brier_improvement"),
                     },
                 )
 
