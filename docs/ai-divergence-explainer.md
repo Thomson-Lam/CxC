@@ -4,7 +4,7 @@ Uses **Backboard.io** with **Google Gemini** to generate natural language explan
 
 ## Overview
 
-When a market has >3% divergence between Polymarket odds and SmartCrowd predictions, users can click "🤖 Explain Divergence" to get an AI explanation of why informed traders might see something the market doesn't.
+When a market has >3% divergence between Polymarket odds and Precognition predictions, users can click "🤖 Explain Divergence" to get an AI explanation of why informed traders might see something the market doesn't.
 
 ## Architecture
 
@@ -27,10 +27,9 @@ POST /markets/{market_id}/explain
 ```json
 {
   "result": {
-    "market_id": "MKT-0060",
-    "explanation": "The SmartCrowd is significantly more bullish...",
-    "cached": false,
-    "provider": "backboard.io"
+    "market_id": "abc123",
+    "explanation": "The Precognition is 5% more bullish because...",
+    "cached": false
   }
 }
 ```

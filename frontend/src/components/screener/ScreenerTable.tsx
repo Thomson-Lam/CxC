@@ -97,8 +97,8 @@ export function ScreenerTable({
             onSort={onSort}
           />
           <SortableHeader
-            field="smartcrowd_prob"
-            label="SmartCrowd"
+            field="precognition_prob"
+            label="Precognition"
             currentSort={sortField}
             sortDir={sortDir}
             onSort={onSort}
@@ -137,7 +137,7 @@ export function ScreenerTable({
               </span>
             </TableCell>
             <TableCell>{(market.market_prob * 100).toFixed(1)}%</TableCell>
-            <TableCell>{(market.smartcrowd_prob * 100).toFixed(1)}%</TableCell>
+            <TableCell>{(market.precognition_prob * 100).toFixed(1)}%</TableCell>
             <TableCell className="text-muted">
               {formatDistanceToNow(new Date(market.snapshot_time), {
                 addSuffix: true,

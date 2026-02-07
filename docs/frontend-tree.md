@@ -50,7 +50,7 @@ frontend/
 │   │   │
 │   │   ├── market/
 │   │   │   ├── SnapshotPanel.tsx   # grid of latest snapshot metrics (divergence, probs, risk, wallets)
-│   │   │   ├── ProbabilityChart.tsx # Recharts line chart: market vs SmartCrowd prob over time
+│   │   │   ├── ProbabilityChart.tsx # Recharts line chart: market vs Precognition prob over time
 │   │   │   └── TopDriversTable.tsx # top contributing wallets: weight, belief, contribution, linked
 │   │   │
 │   │   ├── wallet/

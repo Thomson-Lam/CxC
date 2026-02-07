@@ -1,13 +1,13 @@
-# SmartCrowd Backend MVP Design
+# Precognition Backend MVP Design
 
 ## 1) Purpose
 
 Build a backend system that computes a second forecast signal for prediction markets:
 
 - `Market Prob`: implied by market price
-- `SmartCrowd Prob`: implied by wallet-level trade flow weighted by historical reliability
+- `Precognition Prob`: implied by wallet-level trade flow weighted by historical reliability
 
-The system ingests market/trade/outcome data, profiles wallets, computes trust weights with shrinkage, infers wallet beliefs from trade sequences, produces manipulation-aware SmartCrowd snapshots, and evaluates predictive quality with backtests.
+The system ingests market/trade/outcome data, profiles wallets, computes trust weights with shrinkage, infers wallet beliefs from trade sequences, produces manipulation-aware Precognition snapshots, and evaluates predictive quality with backtests.
 
 ## 2) Scope
 
@@ -24,7 +24,7 @@ The system ingests market/trade/outcome data, profiles wallets, computes trust w
   - style/behavior signals (churn, persistence, trade size, timing)
   - specialization score
 - Trust-weight model with shrinkage by support
-- SmartCrowd probability aggregation with confidence and integrity controls
+- Precognition probability aggregation with confidence and integrity controls
 - Backtesting and evaluation summary
 - API endpoints for screener, market detail, wallet explorer, alerts
 
@@ -51,7 +51,7 @@ SQLite Core Tables (markets, trades, outcomes)
         |
         +--> Wallet Weights   --> wallet_weights
         |
-        +--> SmartCrowd Build --> smartcrowd_snapshots
+        +--> Precognition Build --> precognition_snapshots
         |
         +--> Backtest         --> market_backtests + backtest_reports
         |
@@ -70,7 +70,7 @@ FastAPI endpoints (screener, market, wallet, alerts, backtest)
 - `backend/app/services/beliefs.py`: wallet belief inference from trade sequences
 - `backend/app/services/features.py`: wallet profiling
 - `backend/app/services/weights.py`: shrinkage trust weights
-- `backend/app/services/smartcrowd.py`: SmartCrowd snapshot construction
+- `backend/app/services/precognition.py`: Precognition snapshot construction
 - `backend/app/services/backtest.py`: evaluation pipeline
 - `backend/app/services/pipeline.py`: recompute orchestration
 - `backend/scripts/load_polymarket.py`: CLI for live ingest
@@ -114,7 +114,7 @@ The trades table is currently being used as a fallback for querying specific pre
 
 - `wallet_metrics`: per-wallet quality/style features by category/horizon
 - `wallet_weights`: trust weight and uncertainty by category/horizon
-- `smartcrowd_snapshots`: per-market signal state at snapshot time
+- `precognition_snapshots`: per-market signal state at snapshot time
 - `market_backtests`: per-market backtest rows
 - `backtest_reports`: aggregate backtest summary JSON
 - `ingestion_checkpoints`: incremental sync state (`last_timestamp` + metadata)
@@ -228,7 +228,7 @@ Result:
 - `weight` (bounded positive trust)
 - `uncertainty` (0..1)
 
-## 10) SmartCrowd Signal Construction
+## 10) Precognition Signal Construction
 
 At market time `t`:
 
@@ -238,11 +238,11 @@ At market time `t`:
 2. Effective weight:
    - `ew_i = w_i * confidence_i * anti_noise_i`
 3. Aggregate:
-   - `SmartCrowd = sum(ew_i * belief_i) / sum(ew_i)`
+   - `Precognition = sum(ew_i * belief_i) / sum(ew_i)`
 
 Additional outputs:
 
-- `divergence = SmartCrowd - MarketProb`
+- `divergence = Precognition - MarketProb`
 - `disagreement` (weighted belief dispersion)
 - `participation_quality` (effective N via Herfindahl)
 - `integrity_risk` (concentration + churn proxy)
@@ -268,15 +268,15 @@ These are safeguards against pumpy or concentrated activity.
 Backtest method:
 
 1. For resolved markets, evaluate at a historical cutoff (e.g. 12h before end/resolution)
-2. Compute market and SmartCrowd probabilities at cutoff
+2. Compute market and Precognition probabilities at cutoff
 3. Compare against realized outcome
 
 Metrics:
 
-- Brier score (market vs SmartCrowd)
-- Log loss (market vs SmartCrowd)
+- Brier score (market vs Precognition)
+- Log loss (market vs Precognition)
 - Calibration bins
-- Divergence edge buckets (`|SmartCrowd - Market|`) with win-rate comparisons
+- Divergence edge buckets (`|Precognition - Market|`) with win-rate comparisons
 - Top divergence case studies with winner labels
 
 Persistence:
@@ -331,7 +331,7 @@ uvicorn app.main:app --reload --port 8000
 ### Common issue: `database is locked`
 
 - Ensure only one writer process is active.
-- Stop any running server/job using `backend/data/smartcrowd.db`.
+- Stop any running server/job using `backend/data/precognition.db`.
 - Re-run ingest command.
 
 ## 15) Design Tradeoffs

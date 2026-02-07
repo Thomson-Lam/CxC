@@ -105,7 +105,7 @@ function ScreenerContent() {
         <div>
           <h1 className="text-3xl font-bold">Screener</h1>
           <p className="mt-1 text-muted">
-            {data.count} markets ranked by SmartCrowd divergence
+            {data.count} markets ranked by Precognition divergence
           </p>
         </div>
       </div>

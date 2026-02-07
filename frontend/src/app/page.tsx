@@ -87,7 +87,7 @@ export default function Dashboard() {
             <CardContent className="mt-4">
               <div className="text-2xl font-bold">{screener.count}</div>
               <div className="mt-1 text-sm text-muted">
-                with SmartCrowd signals
+                with Precognition signals
               </div>
             </CardContent>
           </Card>
@@ -112,7 +112,7 @@ export default function Dashboard() {
           <Card hover className="h-full">
             <CardTitle>Screener</CardTitle>
             <CardContent className="mt-2 text-sm text-muted">
-              View all markets ranked by SmartCrowd divergence
+              View all markets ranked by Precognition divergence
             </CardContent>
           </Card>
         </Link>
@@ -121,7 +121,7 @@ export default function Dashboard() {
           <Card hover className="h-full">
             <CardTitle>Backtest</CardTitle>
             <CardContent className="mt-2 text-sm text-muted">
-              Evaluate SmartCrowd signal performance
+              Evaluate Precognition signal performance
             </CardContent>
           </Card>
         </Link>

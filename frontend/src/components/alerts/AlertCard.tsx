@@ -13,7 +13,7 @@ function getAlertTypeLabel(type: string): string {
       return "Regime Shift";
     case "integrity_risk_spike":
       return "Integrity Risk";
-    case "smartcrowd_crossed_market":
+    case "precognition_crossed_market":
       return "Signal Crossed";
     default:
       return type;
@@ -28,7 +28,7 @@ function getAlertVariant(
       return "success";
     case "integrity_risk_spike":
       return "danger";
-    case "smartcrowd_crossed_market":
+    case "precognition_crossed_market":
       return "default";
     default:
       return "muted";

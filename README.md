@@ -14,7 +14,7 @@ Visit `localhost:3000` to view the dashboard.
 
 ## Backend MVP
 
-Wallet-weighted SmartCrowd backend lives in `backend/`.
+Wallet-weighted Precognition backend lives in `backend/`.
 
 Quick run:
 

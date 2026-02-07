@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-SmartCrowd is a wallet-weighted prediction market signal platform. It ingests market/trade data from Polymarket, profiles wallet credibility, infers wallet beliefs from trade sequences, and publishes manipulation-aware probability predictions.
+Precognition is a wallet-weighted prediction market signal platform. It ingests market/trade data from Polymarket, profiles wallet credibility, infers wallet beliefs from trade sequences, and publishes manipulation-aware probability predictions.
 
 ## Build & Run Commands
 
@@ -43,12 +43,12 @@ Polymarket APIs / CSV
         ↓
    Ingestion Layer (app/services/ingest.py, polymarket.py)
         ↓
-   SQLite (backend/data/smartcrowd.db)
+   SQLite (backend/data/precognition.db)
         ↓
    Pipeline (recompute_pipeline)
    ├→ compute_wallet_metrics() - Brier, calibration, style metrics
    ├→ compute_wallet_weights() - Shrinkage-blended trust weights
-   └→ build_snapshots_for_all_markets() - SmartCrowd probability aggregation
+   └→ build_snapshots_for_all_markets() - Precognition probability aggregation
         ↓
    FastAPI Endpoints (app/api.py)
 ```
@@ -65,7 +65,7 @@ Polymarket APIs / CSV
   - `beliefs.py` - Wallet belief inference with recency decay
   - `features.py` - Wallet profiling (Brier score, calibration, style)
   - `weights.py` - Shrinkage trust weight computation
-  - `smartcrowd.py` - SmartCrowd snapshot building
+  - `precognition.py` - Precognition snapshot building
   - `backtest.py` - Evaluation pipeline
 
 ### Frontend Structure (`frontend/`)
@@ -76,9 +76,9 @@ Polymarket APIs / CSV
 
 ## Key Environment Variables
 
-- `SMARTCROWD_DB_PATH` - SQLite path (default: `backend/data/smartcrowd.db`)
-- `SMARTCROWD_HALF_LIFE_HOURS` - Belief inference decay (default: 48)
-- `SMARTCROWD_BACKTEST_CUTOFF_HOURS` - Backtest horizon (default: 12)
+- `PRECOGNITION_DB_PATH` - SQLite path (default: `backend/data/precognition.db`)
+- `PRECOGNITION_HALF_LIFE_HOURS` - Belief inference decay (default: 48)
+- `PRECOGNITION_BACKTEST_CUTOFF_HOURS` - Backtest horizon (default: 12)
 
 ## Important Notes
 
