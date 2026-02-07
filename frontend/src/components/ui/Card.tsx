@@ -3,13 +3,15 @@ import type { HTMLAttributes } from "react";
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
 	hover?: boolean;
+	header?: boolean;
 }
 
-export function Card({ hover, className, children, ...props }: CardProps) {
+export function Card({ hover, header, className, children, ...props }: CardProps) {
 	return (
 		<div
 			className={clsx(
-				"border-2 border-foreground bg-background p-4",
+				"border-2 border-foreground bg-background",
+				header ? "p-0" : "p-4",
 				hover && "group transition-colors hover:bg-foreground hover:text-background hover:border-background",
 				className
 			)}

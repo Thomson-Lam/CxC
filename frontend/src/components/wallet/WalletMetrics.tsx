@@ -18,7 +18,7 @@ interface WalletMetricsProps {
 export function WalletMetrics({ metrics }: WalletMetricsProps) {
   if (!metrics.length) {
     return (
-      <Card className="p-0">
+      <Card header>
         <div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-3">
           <CardTitle>Performance Metrics</CardTitle>
         </div>
@@ -30,7 +30,7 @@ export function WalletMetrics({ metrics }: WalletMetricsProps) {
   }
 
   return (
-    <Card className="p-0">
+    <Card header>
       <div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-3">
         <CardTitle>Performance Metrics</CardTitle>
       </div>

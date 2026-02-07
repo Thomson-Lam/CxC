@@ -18,7 +18,7 @@ interface WalletWeightsProps {
 export function WalletWeights({ weights }: WalletWeightsProps) {
   if (!weights.length) {
     return (
-      <Card className="p-0">
+      <Card header>
         <div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-3">
           <CardTitle>Trust Weights</CardTitle>
         </div>
@@ -30,7 +30,7 @@ export function WalletWeights({ weights }: WalletWeightsProps) {
   }
 
   return (
-    <Card className="p-0">
+    <Card header>
       <div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-3">
         <CardTitle>Trust Weights</CardTitle>
       </div>

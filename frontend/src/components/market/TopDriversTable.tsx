@@ -24,7 +24,7 @@ function shortenWallet(wallet: string): string {
 export function TopDriversTable({ drivers }: TopDriversTableProps) {
   if (!drivers.length) {
     return (
-      <Card className="p-0">
+      <Card header>
         <div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-3">
           <CardTitle>Top Drivers</CardTitle>
         </div>
@@ -36,7 +36,7 @@ export function TopDriversTable({ drivers }: TopDriversTableProps) {
   }
 
   return (
-    <Card className="p-0">
+    <Card header>
       <div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-3">
         <CardTitle>Top Drivers</CardTitle>
       </div>

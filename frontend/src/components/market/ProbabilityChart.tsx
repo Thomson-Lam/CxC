@@ -72,7 +72,7 @@ export function ProbabilityChart({ timeSeries }: ProbabilityChartProps) {
 	const yDomain: [number, number] = useFullScale ? [0, 100] : zoomDomain;
 
 	return (
-		<Card className="p-0">
+		<Card header>
 			<div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-3">
 				<CardTitle>Probability Over Time</CardTitle>
 			</div>
