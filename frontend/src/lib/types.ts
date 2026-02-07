@@ -140,10 +140,11 @@ export interface BacktestSummary {
   cutoff_hours: number;
   evaluated_at: string;
   total_markets: number;
-  smartcrowd_brier: number;
-  market_brier: number;
-  brier_improvement: number;
-  edge_buckets: EdgeBucket[];
+  smartcrowd_brier?: number;
+  market_brier?: number;
+  brier_improvement?: number;
+  edge_buckets?: EdgeBucket[];
+  note?: string;
 }
 
 // Pipeline types

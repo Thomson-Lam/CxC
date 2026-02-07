@@ -9,6 +9,7 @@ from contextlib import contextmanager
 from datetime import datetime
 
 from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import DB_PATH
 from app.db import get_connection, init_db
@@ -38,6 +39,13 @@ from app.services.smartcrowd import build_market_snapshot, latest_screener_rows
 
 def create_app() -> FastAPI:
     app = FastAPI(title="SmartCrowd Backend MVP", version="0.1.0")
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:3000"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     logger = logging.getLogger("smartcrowd.api")
 
     @app.on_event("startup")

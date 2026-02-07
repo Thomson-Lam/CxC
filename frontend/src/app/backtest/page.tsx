@@ -65,7 +65,17 @@ export default function BacktestPage() {
       {runBacktest.data && (
         <>
           <BacktestSummary summary={runBacktest.data} />
-          <EdgeBuckets buckets={runBacktest.data.edge_buckets} />
+          {runBacktest.data.edge_buckets ? (
+            <EdgeBuckets buckets={runBacktest.data.edge_buckets} />
+          ) : (
+            <Card className="border-dashed">
+              <CardContent className="py-8 text-center">
+                <p className="text-muted">
+                  {runBacktest.data.note ?? "No edge bucket data available"}
+                </p>
+              </CardContent>
+            </Card>
+          )}
         </>
       )}
 
