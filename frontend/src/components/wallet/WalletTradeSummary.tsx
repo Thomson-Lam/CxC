@@ -11,6 +11,8 @@ import {
 	Badge,
 } from "@/components/ui";
 import type { WalletTradeSummary as WalletTradeSummaryType } from "@/lib/types";
+import { FaArrowUpRightDots } from "react-icons/fa6";
+import { FaRegClock } from "react-icons/fa";
 
 interface WalletTradeSummaryProps {
 	summary: WalletTradeSummaryType;
@@ -21,12 +23,9 @@ export function WalletTradeSummary({ summary }: WalletTradeSummaryProps) {
 		<>
 			<Card header>
 				<div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-4">
-					<CardTitle>Trade Activity</CardTitle>
+					<CardTitle className="flex items-center gap-2"><FaArrowUpRightDots /> Trade Activity</CardTitle>
 				</div>
 				<CardContent className="p-4">
-					<p className="mb-4 text-sm">
-						Raw trade activity
-					</p>
 					<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
 						<div>
 							<div className="text-sm">Total Trades</div>
@@ -59,7 +58,7 @@ export function WalletTradeSummary({ summary }: WalletTradeSummaryProps) {
 			{summary.recent_trades.length > 0 && (
 				<Card header>
 					<div className="bg-foreground text-background border-b-2 border-background px-4 py-2">
-						<CardTitle>Recent Trades</CardTitle>
+						<CardTitle className="flex items-center gap-2"><FaRegClock /> Recent Trades</CardTitle>
 					</div>
 					<CardContent className="p-4">
 						<Table>

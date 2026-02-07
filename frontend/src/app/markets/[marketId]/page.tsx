@@ -10,6 +10,7 @@ import { TopDriversTable } from "@/components/market/TopDriversTable";
 import { DivergenceExplainer } from "@/components/market/DivergenceExplainer";
 import { useMarket } from "@/lib/hooks";
 import { format } from "date-fns";
+import { PiFlowArrowLight } from "react-icons/pi";
 
 export default function MarketDetailPage({
 	params,
@@ -91,7 +92,7 @@ export default function MarketDetailPage({
 
 			<Card header>
 				<div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-4">
-					<CardTitle>Flow Summary</CardTitle>
+					<CardTitle className="flex items-center gap-2"><PiFlowArrowLight /> Flow Summary</CardTitle>
 				</div>
 				<CardContent className="p-4">
 					<div className="mt-2 flex gap-6">

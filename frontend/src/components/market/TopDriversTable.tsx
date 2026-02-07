@@ -11,6 +11,7 @@ import {
 	CardContent,
 } from "@/components/ui";
 import type { TopDriver } from "@/lib/types";
+import { RxRocket } from "react-icons/rx";
 
 interface TopDriversTableProps {
 	drivers: TopDriver[];
@@ -26,7 +27,7 @@ export function TopDriversTable({ drivers }: TopDriversTableProps) {
 		return (
 			<Card header>
 				<div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-3">
-					<CardTitle>Top Drivers</CardTitle>
+					<CardTitle className="flex items-center gap-2"><RxRocket /> Top Drivers</CardTitle>
 				</div>
 				<CardContent className="py-8 text-center text-muted">
 					No driver data available
@@ -38,7 +39,7 @@ export function TopDriversTable({ drivers }: TopDriversTableProps) {
 	return (
 		<Card header>
 			<div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-4">
-				<CardTitle>Top Drivers</CardTitle>
+				<CardTitle className="flex items-center gap-2"><RxRocket /> Top Drivers</CardTitle>
 			</div>
 			<CardContent className="p-4">
 				<Table>
