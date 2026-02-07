@@ -210,16 +210,17 @@ def main() -> None:
             t = ingest_trades(conn, paths["trades"])
             o = ingest_outcomes(conn, paths["outcomes"])
             r = recompute_pipeline(conn, include_resolved_snapshots=True)
-            b = run_backtest(conn, cutoff_hours=12.0)
+            b = run_backtest(conn, cutoff_hours=1.0)
         print(f"Ingested: markets={m}, trades_inserted={t['inserted']}, trades_skipped={t['skipped']}, outcomes={o}")
         print(f"Pipeline: {r}")
         print(
             "Backtest:",
             {
                 "run_id": b.get("run_id"),
-                "markets_evaluated": b.get("markets_evaluated"),
-                "brier": b.get("brier"),
-                "log_loss": b.get("log_loss"),
+                "total_markets": b.get("total_markets"),
+                "market_brier": b.get("market_brier"),
+                "precognition_brier": b.get("precognition_brier"),
+                "brier_improvement": b.get("brier_improvement"),
             },
         )
 

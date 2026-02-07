@@ -25,7 +25,9 @@ class PolymarketIngestRequest(BaseModel):
     max_trade_timestamp: int | None = Field(default=None, ge=0)
     use_incremental_checkpoint: bool = True
     checkpoint_lookback_seconds: int = Field(default=300, ge=0, le=86400)
+    prefer_recent_closed_markets: bool = True
     reset_checkpoint: bool = False
+    request_delay_ms: int = Field(default=250, ge=0, le=5000)
 
 
 class RecomputeRequest(BaseModel):
@@ -34,7 +36,7 @@ class RecomputeRequest(BaseModel):
 
 
 class BacktestRequest(BaseModel):
-    cutoff_hours: float = Field(default=12.0, gt=0.0, le=168.0)
+    cutoff_hours: float = Field(default=1.0, gt=0.0, le=168.0)
     run_id: str | None = None
 
 
