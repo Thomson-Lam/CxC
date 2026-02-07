@@ -8,9 +8,11 @@ interface SnapshotPanelProps {
 
 export function SnapshotPanel({ snapshot }: SnapshotPanelProps) {
 	return (
-		<Card>
-			<CardTitle>Latest Snapshot</CardTitle>
-			<CardContent className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+		<Card className="p-0">
+			<div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-3">
+				<CardTitle>Latest Snapshot</CardTitle>
+			</div>
+			<CardContent className="p-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				<div>
 					<div className="text-sm">Divergence</div>
 					<div className="mt-1">

@@ -3,7 +3,7 @@
 import { use } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { LoadingState, Card, CardContent, Badge } from "@/components/ui";
+import { LoadingState, Card, CardContent, CardTitle, Badge } from "@/components/ui";
 import { SnapshotPanel } from "@/components/market/SnapshotPanel";
 import { ProbabilityChart } from "@/components/market/ProbabilityChart";
 import { TopDriversTable } from "@/components/market/TopDriversTable";
@@ -89,9 +89,11 @@ export default function MarketDetailPage({
 
 			<TopDriversTable drivers={latest_snapshot.top_drivers} />
 
-			<Card>
-				<CardContent>
-					<div className="text-md font-bold">Flow Summary</div>
+			<Card className="p-0">
+				<div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-3">
+					<CardTitle>Flow Summary</CardTitle>
+				</div>
+				<CardContent className="p-4">
 					<div className="mt-2 flex gap-6">
 						<div>
 							<span>Net YES Flow: </span>{" "}

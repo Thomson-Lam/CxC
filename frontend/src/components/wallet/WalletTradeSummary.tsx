@@ -19,8 +19,8 @@ interface WalletTradeSummaryProps {
 export function WalletTradeSummary({ summary }: WalletTradeSummaryProps) {
 	return (
 		<>
-			<Card className="p-0">
-				<div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-3">
+			<Card>
+				<div className="bg-foreground text-background border-background py-2 w-full px-3">
 					<CardTitle>Trade Activity</CardTitle>
 				</div>
 				<CardContent className="p-4">
