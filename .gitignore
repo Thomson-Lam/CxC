@@ -47,3 +47,10 @@ backend/**/*.pyc
 backend/data/
 backend/*.egg-info/
 backend/.env
+
+# root env
+.env
+
+backboard/
+context/
+

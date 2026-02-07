@@ -69,11 +69,11 @@ CREATE TABLE IF NOT EXISTS wallet_weights (
   PRIMARY KEY (wallet, category, horizon_bucket)
 );
 
-CREATE TABLE IF NOT EXISTS smartcrowd_snapshots (
+CREATE TABLE IF NOT EXISTS precognition_snapshots (
   market_id TEXT NOT NULL,
   snapshot_time TEXT NOT NULL,
   market_prob REAL NOT NULL,
-  smartcrowd_prob REAL NOT NULL,
+  precognition_prob REAL NOT NULL,
   divergence REAL NOT NULL,
   confidence REAL NOT NULL,
   disagreement REAL NOT NULL,
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS market_backtests (
   market_id TEXT NOT NULL,
   cutoff_time TEXT NOT NULL,
   market_prob REAL NOT NULL,
-  smartcrowd_prob REAL NOT NULL,
+  precognition_prob REAL NOT NULL,
   outcome INTEGER NOT NULL,
   confidence REAL NOT NULL,
   divergence REAL NOT NULL
@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS system_metrics (
 
 CREATE INDEX IF NOT EXISTS idx_trades_market_ts ON trades(market_id, ts);
 CREATE INDEX IF NOT EXISTS idx_trades_wallet_ts ON trades(wallet, ts);
-CREATE INDEX IF NOT EXISTS idx_snapshots_market_time ON smartcrowd_snapshots(market_id, snapshot_time);
+CREATE INDEX IF NOT EXISTS idx_snapshots_market_time ON precognition_snapshots(market_id, snapshot_time);
 CREATE INDEX IF NOT EXISTS idx_wallet_metrics_lookup ON wallet_metrics(wallet, category, horizon_bucket);
 CREATE INDEX IF NOT EXISTS idx_wallet_weights_lookup ON wallet_weights(wallet, category, horizon_bucket);
 CREATE INDEX IF NOT EXISTS idx_market_backtests_run ON market_backtests(run_id);
@@ -171,6 +171,6 @@ def init_db() -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     with get_connection() as conn:
         conn.executescript(SCHEMA_SQL)
-        _ensure_column(conn, "smartcrowd_snapshots", "cohort_summary", "TEXT NOT NULL DEFAULT '[]'")
-        _ensure_column(conn, "smartcrowd_snapshots", "flip_conditions", "TEXT NOT NULL DEFAULT '[]'")
-        _ensure_column(conn, "smartcrowd_snapshots", "explanation_json", "TEXT NOT NULL DEFAULT '{}'")
+        _ensure_column(conn, "precognition_snapshots", "cohort_summary", "TEXT NOT NULL DEFAULT '[]'")
+        _ensure_column(conn, "precognition_snapshots", "flip_conditions", "TEXT NOT NULL DEFAULT '[]'")
+        _ensure_column(conn, "precognition_snapshots", "explanation_json", "TEXT NOT NULL DEFAULT '{}'")

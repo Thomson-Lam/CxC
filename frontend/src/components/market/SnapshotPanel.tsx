@@ -26,9 +26,9 @@ export function SnapshotPanel({ snapshot }: SnapshotPanelProps) {
         </div>
 
         <div>
-          <div className="text-sm text-muted">SmartCrowd Probability</div>
+          <div className="text-sm text-muted">Precognition Probability</div>
           <div className="mt-1 text-2xl font-bold">
-            {(snapshot.smartcrowd_prob * 100).toFixed(1)}%
+            {(snapshot.precognition_prob * 100).toFixed(1)}%
           </div>
         </div>
 

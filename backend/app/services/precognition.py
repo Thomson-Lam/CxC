@@ -103,7 +103,7 @@ def _classify_cohort(profile: sqlite3.Row | None, signal: dict) -> str:
 
 def _build_flip_conditions(
     market_prob: float,
-    smartcrowd_prob: float,
+    precognition_prob: float,
     denominator: float,
     divergence: float,
     cohort_summary: list[dict],
@@ -112,14 +112,14 @@ def _build_flip_conditions(
         return [
             {
                 "condition": "signal_aligned_with_market",
-                "detail": "SmartCrowd is currently aligned with market implied probability.",
+                "detail": "Precognition is currently aligned with market implied probability.",
             }
         ]
 
     conditions: list[dict] = []
     if divergence > 0:
         if market_prob > 0:
-            needed = denominator * (smartcrowd_prob - market_prob) / market_prob
+            needed = denominator * (precognition_prob - market_prob) / market_prob
             conditions.append(
                 {
                     "condition": "trusted_no_flow_needed",
@@ -132,7 +132,7 @@ def _build_flip_conditions(
             )
     else:
         if market_prob < 1:
-            needed = denominator * (market_prob - smartcrowd_prob) / (1.0 - market_prob)
+            needed = denominator * (market_prob - precognition_prob) / (1.0 - market_prob)
             conditions.append(
                 {
                     "condition": "trusted_yes_flow_needed",
@@ -151,7 +151,7 @@ def _build_flip_conditions(
                 "condition": "lead_cohort_reversal",
                 "detail": (
                     f"If leading cohort '{lead['cohort']}' reverses direction or halves conviction, "
-                    "the SmartCrowd divergence would compress materially."
+                    "the Precognition divergence would compress materially."
                 ),
                 "lead_cohort": lead["cohort"],
                 "lead_cohort_net_contribution": lead["net_contribution"],
@@ -164,7 +164,7 @@ def _build_explanation_artifacts(
     wallet_signals: list[dict],
     wallet_profiles: dict[str, sqlite3.Row],
     market_prob: float,
-    smartcrowd_prob: float,
+    precognition_prob: float,
     divergence: float,
     denominator: float,
     confidence: float,
@@ -215,7 +215,7 @@ def _build_explanation_artifacts(
 
     flip_conditions = _build_flip_conditions(
         market_prob=market_prob,
-        smartcrowd_prob=smartcrowd_prob,
+        precognition_prob=precognition_prob,
         denominator=denominator,
         divergence=divergence,
         cohort_summary=cohort_summary,
@@ -224,7 +224,7 @@ def _build_explanation_artifacts(
     directional = "YES-leaning" if divergence > 0 else ("NO-leaning" if divergence < 0 else "neutral")
     explanation = {
         "summary": (
-            f"SmartCrowd is {smartcrowd_prob:.3f} vs market {market_prob:.3f} ({directional}), "
+            f"Precognition is {precognition_prob:.3f} vs market {market_prob:.3f} ({directional}), "
             f"confidence {confidence:.2f}, disagreement {disagreement:.3f}, integrity risk {integrity_risk:.3f}."
         ),
         "diagnostics": {
@@ -300,7 +300,7 @@ def build_market_snapshot(
             "market_id": market_id,
             "snapshot_time": snapshot_dt.isoformat(),
             "market_prob": market_prob,
-            "smartcrowd_prob": market_prob,
+            "precognition_prob": market_prob,
             "divergence": 0.0,
             "confidence": 0.0,
             "disagreement": 0.0,
@@ -319,15 +319,15 @@ def build_market_snapshot(
         if persist:
             conn.execute(
                 """
-                INSERT INTO smartcrowd_snapshots (
-                  market_id, snapshot_time, market_prob, smartcrowd_prob, divergence, confidence,
+                INSERT INTO precognition_snapshots (
+                  market_id, snapshot_time, market_prob, precognition_prob, divergence, confidence,
                   disagreement, participation_quality, integrity_risk, active_wallets, top_drivers,
                   cohort_summary, flip_conditions, explanation_json
                 )
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(market_id, snapshot_time) DO UPDATE SET
                   market_prob = excluded.market_prob,
-                  smartcrowd_prob = excluded.smartcrowd_prob,
+                  precognition_prob = excluded.precognition_prob,
                   divergence = excluded.divergence,
                   confidence = excluded.confidence,
                   disagreement = excluded.disagreement,
@@ -343,7 +343,7 @@ def build_market_snapshot(
                     market_id,
                     snapshot_dt.isoformat(),
                     result["market_prob"],
-                    result["smartcrowd_prob"],
+                    result["precognition_prob"],
                     result["divergence"],
                     result["confidence"],
                     result["disagreement"],
@@ -359,12 +359,12 @@ def build_market_snapshot(
         return result
 
     denominator = sum(sig["effective_weight"] for sig in wallet_signals)
-    smartcrowd_prob = sum(sig["effective_weight"] * sig["belief"] for sig in wallet_signals) / max(denominator, 1e-9)
-    smartcrowd_prob = clamp(smartcrowd_prob, 0.001, 0.999)
+    precognition_prob = sum(sig["effective_weight"] * sig["belief"] for sig in wallet_signals) / max(denominator, 1e-9)
+    precognition_prob = clamp(precognition_prob, 0.001, 0.999)
 
     shares = [sig["effective_weight"] / denominator for sig in wallet_signals]
     disagreement = math.sqrt(
-        sum(shares[i] * ((wallet_signals[i]["belief"] - smartcrowd_prob) ** 2) for i in range(len(wallet_signals)))
+        sum(shares[i] * ((wallet_signals[i]["belief"] - precognition_prob) ** 2) for i in range(len(wallet_signals)))
     )
     herfindahl = sum(s * s for s in shares)
     effective_n = 1.0 / max(herfindahl, 1e-9)
@@ -379,7 +379,7 @@ def build_market_snapshot(
     if len(wallet_signals) < 3:
         confidence *= 0.60
 
-    divergence = smartcrowd_prob - market_prob
+    divergence = precognition_prob - market_prob
     top = sorted(
         (
             {
@@ -399,7 +399,7 @@ def build_market_snapshot(
         wallet_signals=wallet_signals,
         wallet_profiles=wallet_profiles,
         market_prob=market_prob,
-        smartcrowd_prob=smartcrowd_prob,
+        precognition_prob=precognition_prob,
         divergence=divergence,
         denominator=denominator,
         confidence=confidence,
@@ -411,7 +411,7 @@ def build_market_snapshot(
         "market_id": market_id,
         "snapshot_time": snapshot_dt.isoformat(),
         "market_prob": market_prob,
-        "smartcrowd_prob": smartcrowd_prob,
+        "precognition_prob": precognition_prob,
         "divergence": divergence,
         "confidence": confidence,
         "disagreement": disagreement,
@@ -427,15 +427,15 @@ def build_market_snapshot(
     if persist:
         conn.execute(
             """
-            INSERT INTO smartcrowd_snapshots (
-              market_id, snapshot_time, market_prob, smartcrowd_prob, divergence, confidence,
+            INSERT INTO precognition_snapshots (
+              market_id, snapshot_time, market_prob, precognition_prob, divergence, confidence,
               disagreement, participation_quality, integrity_risk, active_wallets, top_drivers,
               cohort_summary, flip_conditions, explanation_json
             )
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(market_id, snapshot_time) DO UPDATE SET
               market_prob = excluded.market_prob,
-              smartcrowd_prob = excluded.smartcrowd_prob,
+              precognition_prob = excluded.precognition_prob,
               divergence = excluded.divergence,
               confidence = excluded.confidence,
               disagreement = excluded.disagreement,
@@ -451,7 +451,7 @@ def build_market_snapshot(
                 market_id,
                 snapshot_dt.isoformat(),
                 result["market_prob"],
-                result["smartcrowd_prob"],
+                result["precognition_prob"],
                 result["divergence"],
                 result["confidence"],
                 result["disagreement"],
@@ -499,14 +499,14 @@ def latest_screener_rows(
         """
         WITH latest AS (
           SELECT market_id, MAX(snapshot_time) AS snapshot_time
-          FROM smartcrowd_snapshots
+          FROM precognition_snapshots
           GROUP BY market_id
         )
         SELECT
           s.market_id,
           s.snapshot_time,
           s.market_prob,
-          s.smartcrowd_prob,
+          s.precognition_prob,
           s.divergence,
           s.confidence,
           s.disagreement,
@@ -520,7 +520,7 @@ def latest_screener_rows(
           m.question,
           m.category,
           m.end_time
-        FROM smartcrowd_snapshots s
+        FROM precognition_snapshots s
         JOIN latest l
           ON s.market_id = l.market_id
          AND s.snapshot_time = l.snapshot_time

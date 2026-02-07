@@ -4,7 +4,7 @@ import sqlite3
 from datetime import datetime
 
 from app.services.features import compute_wallet_metrics
-from app.services.smartcrowd import build_snapshots_for_all_markets
+from app.services.precognition import build_snapshots_for_all_markets
 from app.services.weights import compute_wallet_weights
 
 

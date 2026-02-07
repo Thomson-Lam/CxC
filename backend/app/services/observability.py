@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 
 from app.db import now_utc_iso
 
-LOGGER = logging.getLogger("smartcrowd.obs")
+LOGGER = logging.getLogger("precognition.obs")
 
 
 def _parse_iso(ts: str) -> datetime:

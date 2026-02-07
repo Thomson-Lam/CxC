@@ -18,7 +18,7 @@ export interface ScreenerMarket {
   end_time: string;
   snapshot_time: string;
   market_prob: number;
-  smartcrowd_prob: number;
+  precognition_prob: number;
   divergence: number;
   confidence: number;
   disagreement: number;
@@ -45,7 +45,7 @@ export interface MarketInfo {
 export interface LatestSnapshot {
   snapshot_time: string;
   market_prob: number;
-  smartcrowd_prob: number;
+  precognition_prob: number;
   divergence: number;
   confidence: number;
   disagreement: number;
@@ -58,7 +58,7 @@ export interface LatestSnapshot {
 export interface TimeSeriesPoint {
   snapshot_time: string;
   market_prob: number;
-  smartcrowd_prob: number;
+  precognition_prob: number;
   divergence: number;
   confidence: number;
 }
@@ -131,7 +131,7 @@ export interface WalletDetailResponse {
 export type AlertType =
   | "trusted_cohort_regime_shift"
   | "integrity_risk_spike"
-  | "smartcrowd_crossed_market";
+  | "precognition_crossed_market";
 
 export interface Alert {
   type: AlertType;
@@ -162,7 +162,7 @@ export interface BacktestSummary {
   cutoff_hours: number;
   evaluated_at: string;
   total_markets: number;
-  smartcrowd_brier?: number;
+  precognition_brier?: number;
   market_brier?: number;
   brier_improvement?: number;
   edge_buckets?: EdgeBucket[];

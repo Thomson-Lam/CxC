@@ -1,11 +1,11 @@
-# SmartCrowd Backend MVP
+# Precognition Backend MVP
 
 Backend service for wallet-weighted prediction market signals:
 - ingest market/trade/outcome data
 - compute wallet profiles and shrinkage trust weights
 - infer per-wallet latent beliefs from trade sequences
-- publish manipulation-aware SmartCrowd probabilities
-- evaluate SmartCrowd vs market-implied probabilities
+- publish manipulation-aware Precognition probabilities
+- evaluate Precognition vs market-implied probabilities
 
 ## Quickstart
 

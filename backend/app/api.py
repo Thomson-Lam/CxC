@@ -34,11 +34,12 @@ from app.services.observability import (
 )
 from app.services.pipeline import recompute_pipeline
 from app.services.polymarket import ingest_polymarket
-from app.services.smartcrowd import build_market_snapshot, latest_screener_rows
+from app.services.precognition import build_market_snapshot, latest_screener_rows
+from app.services.backboard import explain_divergence as generate_ai_explanation
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="SmartCrowd Backend MVP", version="0.1.0")
+    app = FastAPI(title="Precognition Backend MVP", version="0.1.0")
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["http://localhost:3000"],
@@ -46,7 +47,7 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    logger = logging.getLogger("smartcrowd.api")
+    logger = logging.getLogger("precognition.api")
 
     @app.on_event("startup")
     def _startup() -> None:
@@ -273,7 +274,7 @@ def create_app() -> FastAPI:
                     "end_time": row["end_time"],
                     "snapshot_time": row["snapshot_time"],
                     "market_prob": row["market_prob"],
-                    "smartcrowd_prob": row["smartcrowd_prob"],
+                    "precognition_prob": row["precognition_prob"],
                     "divergence": row["divergence"],
                     "confidence": row["confidence"],
                     "disagreement": row["disagreement"],
@@ -302,7 +303,7 @@ def create_app() -> FastAPI:
         latest = conn.execute(
             """
             SELECT *
-            FROM smartcrowd_snapshots
+            FROM precognition_snapshots
             WHERE market_id = ?
             ORDER BY snapshot_time DESC
             LIMIT 1
@@ -315,7 +316,7 @@ def create_app() -> FastAPI:
             latest = conn.execute(
                 """
                 SELECT *
-                FROM smartcrowd_snapshots
+                FROM precognition_snapshots
                 WHERE market_id = ?
                 ORDER BY snapshot_time DESC
                 LIMIT 1
@@ -327,8 +328,8 @@ def create_app() -> FastAPI:
 
         time_series = conn.execute(
             """
-            SELECT snapshot_time, market_prob, smartcrowd_prob, divergence, confidence
-            FROM smartcrowd_snapshots
+            SELECT snapshot_time, market_prob, precognition_prob, divergence, confidence
+            FROM precognition_snapshots
             WHERE market_id = ?
             ORDER BY snapshot_time DESC
             LIMIT ?
@@ -351,7 +352,7 @@ def create_app() -> FastAPI:
             direction = yes_direction(tr["side"], tr["action"])
             net_yes_flow += direction * float(tr["size"])
 
-        smart_prob = float(latest["smartcrowd_prob"])
+        smart_prob = float(latest["precognition_prob"])
         market_prob = float(latest["market_prob"])
         confidence = float(latest["confidence"])
         top_drivers = json.loads(latest["top_drivers"]) if latest["top_drivers"] else []
@@ -363,7 +364,7 @@ def create_app() -> FastAPI:
         else:
             directional = "balanced flow"
         fallback_explanation = (
-            f"Market implied is {market_prob:.3f}, SmartCrowd is {smart_prob:.3f} with "
+            f"Market implied is {market_prob:.3f}, Precognition is {smart_prob:.3f} with "
             f"confidence {confidence:.2f}, driven by trusted cohorts {directional}."
         )
         explanation = explanation_artifacts.get("summary", fallback_explanation) if explanation_artifacts else fallback_explanation
@@ -380,7 +381,7 @@ def create_app() -> FastAPI:
                 "latest_snapshot": {
                     "snapshot_time": latest["snapshot_time"],
                     "market_prob": market_prob,
-                    "smartcrowd_prob": smart_prob,
+                    "precognition_prob": smart_prob,
                     "divergence": latest["divergence"],
                     "confidence": confidence,
                     "disagreement": latest["disagreement"],
@@ -395,6 +396,68 @@ def create_app() -> FastAPI:
                 "time_series": [dict(row) for row in reversed(time_series)],
                 "flow_summary": {"net_yes_flow_size": net_yes_flow, "trade_count": len(trade_rows)},
                 "explanation": explanation,
+            }
+        )
+
+    @app.post("/markets/{market_id}/explain", response_model=GenericResponse)
+    def explain_market(
+        market_id: str,
+        conn: sqlite3.Connection = Depends(get_conn),
+    ) -> GenericResponse:
+        """Generate AI explanation for market divergence using Backboard.io + Gemini."""
+        # Get market info
+        market = conn.execute(
+            "SELECT id, question, category, end_time, liquidity FROM markets WHERE id = ?",
+            (market_id,),
+        ).fetchone()
+        if not market:
+            raise HTTPException(status_code=404, detail=f"Market not found: {market_id}")
+
+        # Get latest snapshot
+        latest = conn.execute(
+            """
+            SELECT *
+            FROM precognition_snapshots
+            WHERE market_id = ?
+            ORDER BY snapshot_time DESC
+            LIMIT 1
+            """,
+            (market_id,),
+        ).fetchone()
+        if not latest:
+            raise HTTPException(
+                status_code=404, 
+                detail=f"No snapshot found for market: {market_id}"
+            )
+
+        # Build context for AI
+        context = {
+            "market_id": market_id,
+            "question": market["question"],
+            "category": market["category"],
+            "market_prob": float(latest["market_prob"]),
+            "precognition_prob": float(latest["precognition_prob"]),
+            "divergence": float(latest["divergence"]),
+            "confidence": float(latest["confidence"]),
+            "integrity_risk": float(latest["integrity_risk"]),
+            "active_wallets": latest["active_wallets"],
+            "top_drivers": json.loads(latest["top_drivers"]) if latest["top_drivers"] else [],
+            "cohort_summary": json.loads(latest["cohort_summary"]) if latest["cohort_summary"] else [],
+        }
+
+        # Generate AI explanation (rate limited & cached)
+        result = generate_ai_explanation(context)
+
+        if result.get("error"):
+            if result.get("rate_limited"):
+                raise HTTPException(status_code=429, detail=result["error"])
+            raise HTTPException(status_code=500, detail=result["error"])
+
+        return GenericResponse(
+            result={
+                "market_id": market_id,
+                "explanation": result.get("explanation"),
+                "cached": result.get("cached", False),
             }
         )
 
@@ -527,7 +590,7 @@ def create_app() -> FastAPI:
                 confidence,
                 integrity_risk,
                 ROW_NUMBER() OVER (PARTITION BY market_id ORDER BY snapshot_time DESC) AS rn
-              FROM smartcrowd_snapshots
+              FROM precognition_snapshots
             )
             SELECT
               r.market_id,
@@ -583,7 +646,7 @@ def create_app() -> FastAPI:
                 if divergence * prev_val < 0:
                     alerts_payload.append(
                         {
-                            "type": "smartcrowd_crossed_market",
+                            "type": "precognition_crossed_market",
                             "market_id": row["market_id"],
                             "question": row["question"],
                             "category": row["category"],
