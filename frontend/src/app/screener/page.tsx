@@ -12,123 +12,123 @@ type SortField = keyof ScreenerMarket;
 type SortDir = "asc" | "desc";
 
 function sortMarkets(
-  markets: ScreenerMarket[],
-  sortField: SortField,
-  sortDir: SortDir
+	markets: ScreenerMarket[],
+	sortField: SortField,
+	sortDir: SortDir
 ): ScreenerMarket[] {
-  return [...markets].sort((a, b) => {
-    const aVal = a[sortField];
-    const bVal = b[sortField];
+	return [...markets].sort((a, b) => {
+		const aVal = a[sortField];
+		const bVal = b[sortField];
 
-    if (typeof aVal === "number" && typeof bVal === "number") {
-      return sortDir === "asc" ? aVal - bVal : bVal - aVal;
-    }
+		if (typeof aVal === "number" && typeof bVal === "number") {
+			return sortDir === "asc" ? aVal - bVal : bVal - aVal;
+		}
 
-    const aStr = String(aVal ?? "");
-    const bStr = String(bVal ?? "");
-    return sortDir === "asc"
-      ? aStr.localeCompare(bStr)
-      : bStr.localeCompare(aStr);
-  });
+		const aStr = String(aVal ?? "");
+		const bStr = String(bVal ?? "");
+		return sortDir === "asc"
+			? aStr.localeCompare(bStr)
+			: bStr.localeCompare(aStr);
+	});
 }
 
 function ScreenerContent() {
-  const searchParams = useSearchParams();
-  const limitParam = searchParams.get("limit");
-  const minConfidenceParam = searchParams.get("minConfidence");
+	const searchParams = useSearchParams();
+	const limitParam = searchParams.get("limit");
+	const minConfidenceParam = searchParams.get("minConfidence");
 
-  const limit = limitParam ? parseInt(limitParam, 10) : 50;
-  const minConfidence = minConfidenceParam ? parseFloat(minConfidenceParam) : 0;
+	const limit = limitParam ? parseInt(limitParam, 10) : 50;
+	const minConfidence = minConfidenceParam ? parseFloat(minConfidenceParam) : 0;
 
-  const { data, isLoading, error } = useScreener({ limit, minConfidence });
-  const [showPipelineModal, setShowPipelineModal] = useState(false);
+	const { data, isLoading, error } = useScreener({ limit, minConfidence });
+	const [showPipelineModal, setShowPipelineModal] = useState(false);
 
-  const [sortField, setSortField] = useState<SortField>("divergence");
-  const [sortDir, setSortDir] = useState<SortDir>("desc");
+	const [sortField, setSortField] = useState<SortField>("divergence");
+	const [sortDir, setSortDir] = useState<SortDir>("desc");
 
-  const markets = data?.markets ?? [];
-  const sortedMarkets = sortMarkets(markets, sortField, sortDir);
+	const markets = data?.markets ?? [];
+	const sortedMarkets = sortMarkets(markets, sortField, sortDir);
 
-  const handleSort = (field: string) => {
-    if (field === sortField) {
-      setSortDir(sortDir === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field as SortField);
-      setSortDir("desc");
-    }
-  };
+	const handleSort = (field: string) => {
+		if (field === sortField) {
+			setSortDir(sortDir === "asc" ? "desc" : "asc");
+		} else {
+			setSortField(field as SortField);
+			setSortDir("desc");
+		}
+	};
 
-  if (isLoading) {
-    return <LoadingState message="Loading screener data..." />;
-  }
+	if (isLoading) {
+		return <LoadingState message="Loading screener data..." />;
+	}
 
-  if (error) {
-    return (
-      <div className="space-y-4">
-        <h1 className="text-3xl font-bold">Screener</h1>
-        <Card className="border-danger">
-          <CardContent className="py-8 text-center">
-            <p className="text-danger">Failed to load screener data</p>
-            <p className="mt-2 text-sm text-muted">{error.message}</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+	if (error) {
+		return (
+			<div className="space-y-4">
+				<h1 className="text-5xl font-bold">Screener</h1>
+				<Card className="border-danger">
+					<CardContent className="py-8 text-center">
+						<p className="text-danger">Failed to load screener data</p>
+						<p className="mt-2 text-sm text-muted">{error.message}</p>
+					</CardContent>
+				</Card>
+			</div>
+		);
+	}
 
-  if (!data?.markets.length) {
-    return (
-      <div className="space-y-4">
-        <h1 className="text-3xl font-bold">Screener</h1>
-        <Card className="border-dashed">
-          <CardContent className="py-12 text-center">
-            <h2 className="mb-2 text-xl font-bold">No Markets Found</h2>
-            <p className="mb-6 text-muted">
-              Run an ingest to start tracking prediction markets
-            </p>
-            <Button onClick={() => setShowPipelineModal(true)}>
-              Ingest Data
-            </Button>
-          </CardContent>
-        </Card>
-        <RunPipelineModal
-          open={showPipelineModal}
-          onClose={() => setShowPipelineModal(false)}
-        />
-      </div>
-    );
-  }
+	if (!data?.markets.length) {
+		return (
+			<div className="space-y-4">
+				<h1 className="text-5xl font-bold">Screener</h1>
+				<Card className="border-dashed">
+					<CardContent className="py-12 text-center">
+						<h2 className="mb-2 text-xl font-bold">No Markets Found</h2>
+						<p className="mb-6 text-muted">
+							Run an ingest to start tracking prediction markets
+						</p>
+						<Button onClick={() => setShowPipelineModal(true)}>
+							Ingest Data
+						</Button>
+					</CardContent>
+				</Card>
+				<RunPipelineModal
+					open={showPipelineModal}
+					onClose={() => setShowPipelineModal(false)}
+				/>
+			</div>
+		);
+	}
 
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Screener</h1>
-          <p className="mt-1 text-muted">
-            {data.count} markets ranked by Precognition divergence
-          </p>
-        </div>
-      </div>
+	return (
+		<div className="space-y-6">
+			<div className="flex items-center justify-between">
+				<div>
+					<h1 className="text-5xl font-bold">Screener</h1>
+					<p className="mt-5 font-bold">
+						{data.count} markets ranked by precognition divergence
+					</p>
+				</div>
+			</div>
 
-      <ScreenerTable
-        markets={sortedMarkets}
-        sortField={sortField}
-        sortDir={sortDir}
-        onSort={handleSort}
-      />
+			<ScreenerTable
+				markets={sortedMarkets}
+				sortField={sortField}
+				sortDir={sortDir}
+				onSort={handleSort}
+			/>
 
-      <RunPipelineModal
-        open={showPipelineModal}
-        onClose={() => setShowPipelineModal(false)}
-      />
-    </div>
-  );
+			<RunPipelineModal
+				open={showPipelineModal}
+				onClose={() => setShowPipelineModal(false)}
+			/>
+		</div>
+	);
 }
 
 export default function ScreenerPage() {
-  return (
-    <Suspense fallback={<LoadingState message="Loading..." />}>
-      <ScreenerContent />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<LoadingState message="Loading..." />}>
+			<ScreenerContent />
+		</Suspense>
+	);
 }
