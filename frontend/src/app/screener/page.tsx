@@ -48,7 +48,7 @@ function ScreenerContent() {
 	const [search, setSearch] = useState("");
 	const [categoryFilter, setCategoryFilter] = useState("all");
 
-	const markets = data?.markets ?? [];
+	const markets = useMemo(() => data?.markets ?? [], [data]);
 
 	const categories = useMemo(
 		() => [...new Set(markets.map((m) => m.category).filter(Boolean))].sort(),
