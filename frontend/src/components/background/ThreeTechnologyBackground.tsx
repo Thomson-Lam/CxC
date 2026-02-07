@@ -16,8 +16,10 @@ export function ThreeTechnologyBackground() {
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x000000, 0);
+    renderer.domElement.style.width = "100%";
+    renderer.domElement.style.height = "100%";
+    renderer.domElement.style.display = "block";
     mount.appendChild(renderer.domElement);
 
     const nodeCount = 160;
@@ -110,14 +112,21 @@ export function ThreeTechnologyBackground() {
     };
 
     const onResize = () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
+      const width = Math.max(1, mount.clientWidth || window.innerWidth);
+      const height = Math.max(1, mount.clientHeight || window.innerHeight);
+      camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(width, height, false);
     };
 
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     window.addEventListener("resize", onResize);
+    window.visualViewport?.addEventListener("resize", onResize);
+    const resizeObserver = new ResizeObserver(() => onResize());
+    resizeObserver.observe(mount);
+    onResize();
+    requestAnimationFrame(onResize);
 
     let rafId = 0;
     const clock = new THREE.Clock();
@@ -153,6 +162,8 @@ export function ThreeTechnologyBackground() {
       cancelAnimationFrame(rafId);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("resize", onResize);
+      window.visualViewport?.removeEventListener("resize", onResize);
+      resizeObserver.disconnect();
       pointsGeometry.dispose();
       pointsMaterial.dispose();
       lineGeometry.dispose();
@@ -163,7 +174,7 @@ export function ThreeTechnologyBackground() {
   }, []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-background">
+    <div className="pointer-events-none fixed inset-0 -z-10 h-dvh overflow-hidden bg-background">
       <div ref={mountRef} className="h-full w-full opacity-75 grayscale" />
       <div className="absolute inset-0 bg-background/40" />
     </div>
