@@ -155,7 +155,7 @@ export default function LandingPage() {
 
       <section
         id="top"
-        className="relative z-10 flex min-h-screen items-center justify-center"
+        className="relative z-10 flex min-h-screen items-center justify-center overflow-hidden"
       >
         <div className="relative z-10 flex flex-col items-center gap-6 text-center">
           <div className={styles.forecastTitleWrap}>
