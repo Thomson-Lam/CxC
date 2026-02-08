@@ -301,14 +301,20 @@ function ScreenerContent() {
 				)}
 			</div>
 
-			<ScreenerTable
-				markets={sortedMarkets}
-				sortField={sortField}
-				sortDir={sortDir}
-				onSort={handleSort}
-				watchedMarketIds={watchlistSet}
-				onToggleWatchlist={handleToggleWatchlist}
-			/>
+			<Card className="border-dashed py-8 text-center sm:hidden">
+				<p className="text-muted">Enjoy the best experience on Desktop</p>
+			</Card>
+
+			<div className="hidden sm:block">
+				<ScreenerTable
+					markets={sortedMarkets}
+					sortField={sortField}
+					sortDir={sortDir}
+					onSort={handleSort}
+					watchedMarketIds={watchlistSet}
+					onToggleWatchlist={handleToggleWatchlist}
+				/>
+			</div>
 
 			<RunPipelineModal
 				open={showPipelineModal}
