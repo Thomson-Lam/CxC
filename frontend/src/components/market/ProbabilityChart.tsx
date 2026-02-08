@@ -1303,19 +1303,19 @@ export function ProbabilityChart({ marketId, timeSeries, compact = false }: Prob
 					<div className="mb-3 flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.08em]">
 						<div className="flex items-center gap-1.5">
 							<span
-								className={`h-2 w-2 rounded-full ${visualizationMode === "lattice" ? "bg-blue-500" : "bg-foreground"}`}
+								className="h-2 w-2 rounded-full bg-blue-500"
 							/>
 							Precognition Vectors
 						</div>
 						<div className="flex items-center gap-1.5">
 							<span
-								className={`h-2 w-2 rounded-full ${visualizationMode === "lattice" ? "bg-red-500" : "bg-foreground/60"}`}
+								className="h-2 w-2 rounded-full bg-red-500"
 							/>
 							Market Vectors
 						</div>
 						<div className="flex items-center gap-1.5">
 							<span
-								className={`h-[2px] w-4 ${visualizationMode === "lattice" ? "bg-green-500" : "bg-foreground/70"}`}
+								className="h-[2px] w-4 bg-green-500"
 							/>
 							Divergence Vectors
 						</div>
