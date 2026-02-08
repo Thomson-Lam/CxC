@@ -29,7 +29,7 @@ export function ProbabilityLatticeScene({
 	const mountRef = useRef<HTMLDivElement | null>(null);
 	const tooltipRef = useRef<HTMLDivElement | null>(null);
 	const [hoverIndex, setHoverIndex] = useState<number | null>(null);
-	const [zoomPct, setZoomPct] = useState(100);
+	const [zoomPct, setZoomPct] = useState(140);
 	const hoverIndexRef = useRef(-1);
 
 	useEffect(() => {
@@ -523,8 +523,8 @@ export function ProbabilityLatticeScene({
 		let rotXTarget = -0.2;
 		let rotY = rotYTarget;
 		let rotX = rotXTarget;
-		let camDistance = 156;
-		let camDistanceTarget = 156;
+		let camDistance = 111;
+		let camDistanceTarget = 111;
 		let width = 1;
 		let height = 1;
 		let rafId = 0;
@@ -629,7 +629,7 @@ export function ProbabilityLatticeScene({
 
 		const onWheel = (event: WheelEvent) => {
 			event.preventDefault();
-			camDistanceTarget = clamp(camDistanceTarget + event.deltaY * 0.055, 108, 235);
+			camDistanceTarget = clamp(camDistanceTarget + event.deltaY * 0.055, 78, 235);
 			setZoomPct(Math.round((156 / camDistanceTarget) * 100));
 		};
 
