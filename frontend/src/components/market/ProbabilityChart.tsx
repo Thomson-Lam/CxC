@@ -255,7 +255,7 @@ function ProbabilityDnaScene({ data, yDomain, source }: ProbabilityDnaSceneProps
 			pointsGeometry,
 			track(
 				new THREE.MeshBasicMaterial({
-					color: 0xd4d4d4,
+					color: 0xef4444,
 					transparent: true,
 					opacity: 0.95,
 				}),
@@ -266,7 +266,7 @@ function ProbabilityDnaScene({ data, yDomain, source }: ProbabilityDnaSceneProps
 			pointsGeometry,
 			track(
 				new THREE.MeshBasicMaterial({
-					color: 0xffffff,
+					color: 0x3b82f6,
 					transparent: true,
 					opacity: 0.98,
 				}),
@@ -306,7 +306,7 @@ function ProbabilityDnaScene({ data, yDomain, source }: ProbabilityDnaSceneProps
 			vectorHeadGeometry,
 			track(
 				new THREE.MeshBasicMaterial({
-					color: 0xd0d0d0,
+					color: 0xef4444,
 					transparent: true,
 					opacity: 0.9,
 				}),
@@ -317,7 +317,7 @@ function ProbabilityDnaScene({ data, yDomain, source }: ProbabilityDnaSceneProps
 			vectorHeadGeometry,
 			track(
 				new THREE.MeshBasicMaterial({
-					color: 0xffffff,
+					color: 0x3b82f6,
 					transparent: true,
 					opacity: 0.95,
 				}),
@@ -335,7 +335,7 @@ function ProbabilityDnaScene({ data, yDomain, source }: ProbabilityDnaSceneProps
 			vectorHeadGeometry,
 			track(
 				new THREE.MeshBasicMaterial({
-					color: 0xffffff,
+					color: 0x22c55e,
 					transparent: true,
 					opacity: 0.95,
 				}),
@@ -367,7 +367,12 @@ function ProbabilityDnaScene({ data, yDomain, source }: ProbabilityDnaSceneProps
 			marketVectorPositions[marketIndex + 3] = arrowEnd.x;
 			marketVectorPositions[marketIndex + 4] = arrowEnd.y;
 			marketVectorPositions[marketIndex + 5] = arrowEnd.z;
-			for (let c = 0; c < 6; c += 1) marketVectorColors[marketIndex + c] = 0.67;
+			marketVectorColors[marketIndex] = 0.94;
+			marketVectorColors[marketIndex + 1] = 0.27;
+			marketVectorColors[marketIndex + 2] = 0.27;
+			marketVectorColors[marketIndex + 3] = 0.94;
+			marketVectorColors[marketIndex + 4] = 0.27;
+			marketVectorColors[marketIndex + 5] = 0.27;
 			headQuat.setFromUnitVectors(arrowUp, dir);
 			headScale.setScalar(0.86);
 			headMatrix.compose(
@@ -390,7 +395,12 @@ function ProbabilityDnaScene({ data, yDomain, source }: ProbabilityDnaSceneProps
 			precogVectorPositions[precogIndex + 3] = arrowEnd.x;
 			precogVectorPositions[precogIndex + 4] = arrowEnd.y;
 			precogVectorPositions[precogIndex + 5] = arrowEnd.z;
-			for (let c = 0; c < 6; c += 1) precogVectorColors[precogIndex + c] = 0.9;
+			precogVectorColors[precogIndex] = 0.23;
+			precogVectorColors[precogIndex + 1] = 0.51;
+			precogVectorColors[precogIndex + 2] = 0.96;
+			precogVectorColors[precogIndex + 3] = 0.23;
+			precogVectorColors[precogIndex + 4] = 0.51;
+			precogVectorColors[precogIndex + 5] = 0.96;
 			headQuat.setFromUnitVectors(arrowUp, dir);
 			headScale.setScalar(0.95);
 			headMatrix.compose(
@@ -419,7 +429,12 @@ function ProbabilityDnaScene({ data, yDomain, source }: ProbabilityDnaSceneProps
 
 			const base = 0.4 + clamp(data[i].confidence, 0, 1) * 0.52;
 			divergenceBase[i] = base;
-			for (let c = 0; c < 6; c += 1) divergenceColors[j + c] = base;
+			divergenceColors[j] = 0.13 * base * 1.6;
+			divergenceColors[j + 1] = 0.77 * base * 1.6;
+			divergenceColors[j + 2] = 0.37 * base * 1.6;
+			divergenceColors[j + 3] = 0.13 * base * 1.6;
+			divergenceColors[j + 4] = 0.77 * base * 1.6;
+			divergenceColors[j + 5] = 0.37 * base * 1.6;
 
 			const headScaleValue = 0.8 + clamp(data[i].confidence, 0, 1) * 0.38;
 			divergenceHeadScales[i] = headScaleValue;
@@ -572,12 +587,12 @@ function ProbabilityDnaScene({ data, yDomain, source }: ProbabilityDnaSceneProps
 				const distance = Math.abs(i - focusIdx);
 				const falloff = clamp(1 - distance / 6, 0, 1);
 				const shade = clamp(divergenceBase[i] + falloff * 0.35, 0, 1);
-				divergenceColors[j] = shade;
-				divergenceColors[j + 1] = shade;
-				divergenceColors[j + 2] = shade;
-				divergenceColors[j + 3] = shade;
-				divergenceColors[j + 4] = shade;
-				divergenceColors[j + 5] = shade;
+				divergenceColors[j] = 0.13 * shade * 1.6;
+				divergenceColors[j + 1] = 0.77 * shade * 1.6;
+				divergenceColors[j + 2] = 0.37 * shade * 1.6;
+				divergenceColors[j + 3] = 0.13 * shade * 1.6;
+				divergenceColors[j + 4] = 0.77 * shade * 1.6;
+				divergenceColors[j + 5] = 0.37 * shade * 1.6;
 
 				headScale.setScalar(divergenceHeadScales[i] + falloff * 0.16);
 				dir.subVectors(precognitionPoints[i], marketPoints[i]).normalize();
@@ -845,6 +860,7 @@ export function ProbabilityChart({ marketId, timeSeries, compact = false }: Prob
 	const [embeddedData, setEmbeddedData] = useState<DnaPoint[] | null>(null);
 	const [embeddingFailed, setEmbeddingFailed] = useState(false);
 	const [showLatticeHelp, setShowLatticeHelp] = useState(false);
+	const [showHelixHelp, setShowHelixHelp] = useState(false);
 	const isMock = timeSeries.length < 2;
 
 	useEffect(() => {
@@ -1006,7 +1022,79 @@ export function ProbabilityChart({ marketId, timeSeries, compact = false }: Prob
 									0-100%
 								</button>
 							</div>
-							{visualizationMode === "lattice" && (
+							{visualizationMode === "dna" && (
+								<div className="relative">
+									<button
+										type="button"
+										onClick={() => setShowHelixHelp((v) => !v)}
+										className={`flex h-[30px] w-[30px] items-center justify-center border-2 border-foreground text-sm font-bold transition-colors ${showHelixHelp
+											? "bg-foreground text-background"
+											: "bg-background text-foreground hover:bg-foreground hover:text-background"
+											}`}
+									>
+										?
+									</button>
+									{showHelixHelp && (
+										<div className="absolute right-0 top-10 z-30 w-72 border-2 border-foreground bg-background p-3 text-xs leading-relaxed">
+											<div className="mb-2 font-bold uppercase tracking-[0.08em]">
+												Reading the Probability Helix
+											</div>
+											<div className="space-y-1.5">
+												<p>
+													Two strands twist around a curved spine. The spine&apos;s
+													shape is driven by PCA.
+												</p>
+												<div className="my-2 border-t border-foreground/20 pt-2">
+													<p>
+														<span className="text-blue-500">&bull;</span> Blue =
+														Precognition (smart money)
+													</p>
+													<p>
+														<span className="text-red-500">&bull;</span> Red =
+														Market consensus price
+													</p>
+													<p>
+														<span className="text-green-500">&bull;</span> Green =
+														Divergence connectors (brighter = higher confidence)
+													</p>
+												</div>
+												<p>
+													<strong>Strand gap</strong> = divergence. Strands
+													pulling apart means smart money and the market disagree.
+												</p>
+												<div className="my-2 border-t border-foreground/20 pt-2 font-bold uppercase tracking-[0.07em]">
+													The PCA spine
+												</div>
+												<p>
+													The backbone is computed from 14 market features: price
+													levels, momentum, rolling trends, divergence velocity,
+													and confidence. PCA compresses these into 3 principal
+													directions.
+												</p>
+												<p>
+													A <strong>straight spine</strong> = stable regime. A{" "}
+													<strong>bending spine</strong> = shifting dynamics
+													&mdash; momentum changed, divergence accelerated, or
+													confidence spiked.
+												</p>
+												<p className="text-muted">
+													The spine shape tells you <em>how</em> the market is
+													evolving; the strand gap tells you <em>how much</em>{" "}
+													disagreement exists.
+												</p>
+											</div>
+											<button
+												type="button"
+												onClick={() => setShowHelixHelp(false)}
+												className="mt-2 w-full border border-foreground py-1 text-center text-xs uppercase tracking-[0.06em] transition-colors hover:bg-foreground hover:text-background"
+											>
+												Got it
+											</button>
+										</div>
+									)}
+								</div>
+							)}
+						{visualizationMode === "lattice" && (
 								<div className="relative">
 									<button
 										type="button"
