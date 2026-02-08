@@ -766,21 +766,21 @@ export function ProbabilityLatticeScene({
 				<div className="border border-foreground/45 bg-background/82 px-2 py-1 text-[11px] uppercase tracking-[0.08em]">
 					3D Probability Lattice · {sourceLabel}
 				</div>
-				<div className="border border-foreground/45 bg-background/82 px-2 py-1 font-mono text-[11px] text-muted">
+				<div className="border border-foreground/45 bg-background/82 px-2 py-1 font-mono text-[11px]">
 					Zoom {zoomPct}%
 				</div>
 			</div>
 
 			<div className="pointer-events-none absolute left-3 top-12 border border-foreground/45 bg-background/82 px-2 py-1.5 font-mono text-[11px] leading-5">
-				<div className="text-muted">Market: {active.market.toFixed(1)}%</div>
+				<div>Market: {active.market.toFixed(1)}%</div>
 				<div className="text-foreground">
 					Precognition: {active.precognition.toFixed(1)}%
 				</div>
-				<div className="text-muted">
+				<div>
 					Divergence: {active.divergence > 0 ? "+" : ""}
 					{active.divergence.toFixed(1)}%
 				</div>
-				<div className="text-muted">
+				<div>
 					Confidence: {(active.confidence * 100).toFixed(0)}%
 				</div>
 			</div>
@@ -791,7 +791,7 @@ export function ProbabilityLatticeScene({
 				<span>{data[data.length - 1]?.time}</span>
 			</div>
 
-			<div className="pointer-events-none absolute bottom-8 right-3 border border-foreground/40 bg-background/82 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.08em] text-muted">
+			<div className="pointer-events-none absolute bottom-8 right-3 border border-foreground/40 bg-background/82 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.08em]">
 				Drag: orbit | Wheel: zoom | Hover: inspect
 			</div>
 
