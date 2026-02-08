@@ -164,8 +164,11 @@ export function ScreenerTable({
 								{market.question}
 							</Link>
 						</TableCell>
-						<TableCell>
-							<Badge>
+						<TableCell className="max-w-[13rem]">
+							<Badge
+								className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap"
+								title={market.category ? formatCategoryLabel(market.category) : "—"}
+							>
 								{market.category ? formatCategoryLabel(market.category) : "—"}
 							</Badge>
 						</TableCell>
