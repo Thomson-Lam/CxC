@@ -250,6 +250,74 @@ function ProbabilityDnaScene({ data, yDomain, source }: ProbabilityDnaSceneProps
 		);
 		dnaGroup.add(axis);
 
+		// ---- PCA spine line ----
+		const spinePoints = centers.length > 1 ? centers : rungMidpoints;
+		if (spinePoints.length > 1) {
+			const spinePositions = new Float32Array(spinePoints.length * 3);
+			for (let i = 0; i < spinePoints.length; i += 1) {
+				spinePositions[i * 3] = spinePoints[i].x;
+				spinePositions[i * 3 + 1] = spinePoints[i].y;
+				spinePositions[i * 3 + 2] = spinePoints[i].z;
+			}
+			const spineGeometry = track(new THREE.BufferGeometry());
+			spineGeometry.setAttribute(
+				"position",
+				track(new THREE.BufferAttribute(spinePositions, 3)),
+			);
+			const spineLine = new THREE.Line(
+				spineGeometry,
+				track(
+					new THREE.LineBasicMaterial({
+						color: 0xffffff,
+						transparent: true,
+						opacity: 0.3,
+					}),
+				),
+			);
+			dnaGroup.add(spineLine);
+		}
+
+		// ---- Divergence rings along spine ----
+		const ringGeometry = track(new THREE.TorusGeometry(1, 0.06, 6, 32));
+		const ringMaterial = track(
+			new THREE.MeshBasicMaterial({
+				color: 0xffffff,
+				transparent: true,
+				opacity: 0.22,
+			}),
+		);
+		const ringMesh = new THREE.InstancedMesh(
+			ringGeometry,
+			ringMaterial,
+			data.length,
+		);
+		ringMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+
+		const ringMatrix = new THREE.Matrix4();
+		const ringQuat = new THREE.Quaternion();
+		const ringScale = new THREE.Vector3();
+		const ringDir = new THREE.Vector3();
+		const ringUp = new THREE.Vector3(0, 1, 0);
+
+		for (let i = 0; i < data.length; i += 1) {
+			const sp = spinePoints[i] || rungMidpoints[i];
+			const prevSp =
+				spinePoints[Math.max(0, i - 1)] || rungMidpoints[Math.max(0, i - 1)];
+			const nextSp =
+				spinePoints[Math.min(spinePoints.length - 1, i + 1)] ||
+				rungMidpoints[Math.min(rungMidpoints.length - 1, i + 1)];
+
+			ringDir.subVectors(nextSp, prevSp).normalize();
+			ringQuat.setFromUnitVectors(ringUp, ringDir);
+
+			const radius = 1.5 + Math.abs(data[i].divergence) * 0.2;
+			ringScale.setScalar(radius);
+			ringMatrix.compose(sp, ringQuat, ringScale);
+			ringMesh.setMatrixAt(i, ringMatrix);
+		}
+		ringMesh.instanceMatrix.needsUpdate = true;
+		dnaGroup.add(ringMesh);
+
 		const pointsGeometry = track(new THREE.SphereGeometry(0.9, 10, 10));
 		const marketPointsMesh = new THREE.InstancedMesh(
 			pointsGeometry,
