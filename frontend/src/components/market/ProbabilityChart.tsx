@@ -11,6 +11,7 @@ import {
 	Legend,
 } from "recharts";
 import { Card, CardTitle, CardContent } from "@/components/ui";
+import { SiGraphite } from "react-icons/si";
 import type { TimeSeriesPoint } from "@/lib/types";
 import { format } from "date-fns";
 
@@ -73,8 +74,8 @@ export function ProbabilityChart({ timeSeries }: ProbabilityChartProps) {
 
 	return (
 		<Card header>
-			<div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-3">
-				<CardTitle>Probability Over Time</CardTitle>
+			<div className="bg-foreground text-background border-b-2 border-background py-2 w-full px-4">
+				<CardTitle className="card-header-title"><SiGraphite /> Probability Over Time</CardTitle>
 			</div>
 			<CardContent className="p-4">
 				<div className="mb-4 flex items-center justify-between">
